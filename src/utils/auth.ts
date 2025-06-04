@@ -9,51 +9,94 @@ interface UserProfile {
     last_name: string;
     avatar_url?: string | null;
     role: UserRole;
+    referral_code?: string | null;
     created_at: string;
     updated_at: string;
 }
 
-// sign up user
+// Simplified signUp function - let the database trigger handle everything
+// Simplified signUp function - let the database trigger handle everything
 const signUp = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
+    email: string, 
+    password: string, 
+    firstName: string, 
+    lastName: string, 
+    referralCode?: string | null
 ) => {
     try {
         const redirectTo = `${window.location.origin}/auth/verify-email/`;
+        
+        // Create the user account - trigger will handle profile creation
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
-            options: { emailRedirectTo: redirectTo },
+            options: {
+                emailRedirectTo: redirectTo,
+                data: {
+                    first_name: firstName,
+                    last_name: lastName
+                }
+            },
         });
 
         if (error) {
+            console.error('Supabase signup error:', error);
             return { success: false, message: error.message };
         }
 
-        const user = data.user;
+        if (!data.user) {
+            return { success: false, message: 'User creation failed' };
+        }
 
-        if (user) {
-            const response = await supabase.from('profiles').upsert({
-                id: user.id,
-                email: user.email,
-                first_name: firstName,
-                last_name: lastName,
-                role: 'user',
-            });
+        // Process referral if provided
+        if (referralCode && data.user) {
+            try {
+                // Call the database function to process referral
+                const { data: referralResult, error: referralError } = await supabase
+                    .rpc('process_referral', {
+                        p_referral_code: referralCode,
+                        p_referred_user_id: data.user.id
+                    });
 
-            if (response.error) {
-                return {
-                    success: false,
-                    message: response.error.message
-                };
+                if (referralError) {
+                    console.error('Referral processing error:', referralError);
+                } else if (referralResult) {
+                    console.log('Referral processed successfully');
+                } else {
+                    console.warn('Referral processing failed - invalid code or other issue');
+                }
+            } catch (referralError) {
+                console.error('Error processing referral:', referralError);
+            }
+            
+            // Clear stored referral code
+            try {
+                const { default: referralService } = await import('./Refferal');
+                referralService.clearStoredReferralCode();
+            } catch (e) {
+                console.error('Error clearing referral code:', e);
+            }
+        } else {
+            // Clear stored referral code even if no referral was used
+            try {
+                const { default: referralService } = await import('./Refferal');
+                referralService.clearStoredReferralCode();
+            } catch (e) {
+                // Ignore errors
             }
         }
 
-        return { success: true, message: "User successfully registered!" };
+        return { 
+            success: true, 
+            message: "User successfully registered! Please check your email to verify your account." 
+        };
+
     } catch (err: any) {
-        return { success: false, message: err.message || "Unexpected error during sign up" };
+        console.error('Unexpected signup error:', err);
+        return { 
+            success: false, 
+            message: err.message || "Unexpected error during sign up" 
+        };
     }
 };
 
@@ -86,6 +129,15 @@ const signIn = async (email: string, password: string) => {
                 success: false,
                 message: 'User authenticated, but profile could not be fetched.',
             };
+        }
+
+        // Ensure user has a referral code after login
+        if (!profile.referral_code) {
+            try {
+                await supabase.rpc('ensure_user_has_referral_code', { user_id: data.user.id });
+            } catch (err) {
+                console.warn('Failed to ensure referral code on login:', err);
+            }
         }
 
         return {

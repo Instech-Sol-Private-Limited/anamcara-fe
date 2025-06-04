@@ -28,6 +28,7 @@ type userData = {
     id: string | null;
     last_name: string | null;
     role: 'superadmin' | 'admin' | 'user' | null;
+    referral_code?: string; 
 };
 
 type AuthContextType = AuthData & {

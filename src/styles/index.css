@@ -552,3 +552,26 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.cyber-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #06b6d4 #1e293b; /* cyan-400 thumb, slate-800 track */
+}
+
+.cyber-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+  background: #1e293b; /* slate-800 */
+  border-radius: 8px;
+}
+.cyber-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #06b6d4 40%, #f97316 100%);
+  border-radius: 8px;
+  border: 2px solid #1e293b;
+}
+.cyber-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #f97316 0%, #06b6d4 100%);
+}
+.cyber-scrollbar::-webkit-scrollbar-corner {
+  background: #1e293b;
+}

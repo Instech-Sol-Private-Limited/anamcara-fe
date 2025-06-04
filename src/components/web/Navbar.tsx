@@ -90,22 +90,31 @@ const Navbar: React.FC = () => {
 
             {/* Call-to-Action Button (Desktop Only) */}
             <div className="hidden lg:flex">
-                {accessToken ? (
-                    role === "superadmin" ?
-                        (
-                            <button onClick={() => navigate('/admin/dashboard')} className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white">
-                                Dashboard
-                            </button>
-                        ) : null
-                ) : (
-
-                    <button onClick={() => navigate('/auth/login')} className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white">
-                        Get Connected
-                    </button>
-                )}
-
-
-            </div>
+    {accessToken ? (
+        role === "superadmin" ? (
+            <button
+                onClick={() => navigate('/admin/dashboard')}
+                className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
+            >
+                Dashboard
+            </button>
+        ) : role === "user" ? (
+            <button
+                onClick={() => navigate('/user/dashboard')}
+                className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
+            >
+                Dashboard
+            </button>
+        ) : null
+    ) : (
+        <button
+            onClick={() => navigate('/auth/login')}
+            className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
+        >
+            Get Connected
+        </button>
+    )}
+</div>
 
             {/* Hamburger Menu Icon (Mobile Only) */}
             <HiOutlineMenu className="text-xl lg:hidden cursor-pointer" onClick={() => setIsMenuOpen(true)} />

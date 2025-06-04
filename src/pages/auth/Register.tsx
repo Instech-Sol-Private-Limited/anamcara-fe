@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signUp } from '../../utils/auth';
+import referralService from '../../utils/Refferal';
 
 const Register: React.FC = () => {
     const [firstName, setFirstName] = useState('');
@@ -12,7 +13,21 @@ const Register: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfPassword, setShowConfPassword] = useState(false);
+    const [referralCode, setReferralCode] = useState<string | null>(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Check for referral code in URL or localStorage
+        const urlReferralCode = referralService.getReferralCodeFromUrl();
+        const storedReferralCode = referralService.getStoredReferralCode();
+        
+        if (urlReferralCode) {
+            setReferralCode(urlReferralCode);
+            referralService.storeReferralCode(urlReferralCode);
+        } else if (storedReferralCode) {
+            setReferralCode(storedReferralCode);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,7 +42,7 @@ const Register: React.FC = () => {
         setLoading(true);
 
         try {
-            const response = await signUp(email, password, firstName, lastName);
+            const response = await signUp(email, password, firstName, lastName, referralCode);
             if (response.success) {
                 navigate('/auth/verify-email', { state: { email } })
             } else {
@@ -44,6 +59,12 @@ const Register: React.FC = () => {
     return (
         <>
             <h2 className="text-xl font-semibold text-white text-center mb-3">Register</h2>
+
+            {referralCode && (
+                <div className="bg-green-900/30 border border-green-500 text-green-100 px-3 py-2 rounded-md mb-3 text-sm">
+                    🎉 You're signing up with a referral code: <strong>{referralCode}</strong>
+                </div>
+            )}
 
             {error && (
                 <div className="bg-red-900/30 border border-red-500 text-red-100 px-3 py-2 rounded-md mb-3 text-sm">
