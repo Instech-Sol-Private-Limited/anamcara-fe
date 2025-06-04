@@ -10,6 +10,7 @@ const AuthLayout = lazy(() => import("../layouts/AuthLayout"));
 const Layout = lazy(() => import("../layouts/Layout"));
 const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
 const WebLayout = lazy(() => import("../layouts/WebLayout"));
+const UserLayout = lazy(() => import("../layouts/UserLayout"));
 
 // web pages
 const Home = lazy(() => import("../pages/web/Home"));
@@ -25,7 +26,6 @@ const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
 
 // admin pages
 const Dashboard = lazy(() => import("../pages/admin/Dashbaord"));
-// const AdminHome = lazy(() => import("../pages/admin/AdminHome"));
 const BlogEditorPage = lazy(() => import("../pages/admin/CreateBlog"));
 const ManageCategories = lazy(() => import("../pages/admin/ManageCategories"));
 const RolesManagement = lazy(() => import("../pages/admin/RolesManagement"));
@@ -33,6 +33,11 @@ const ReportsManagement = lazy(() => import("../pages/admin/ReportsManagement"))
 const BlogDetails = lazy(() => import("../pages/admin/BlogDetails"));
 const ThreadsManagement = lazy(() => import("../pages/admin/ThreadsManagement"));
 const BlogsManagement = lazy(() => import("../pages/admin/BlogsManagement"));
+
+// userDashboard pages
+const Dashbaord = lazy(() => import("../pages/user/Dashboard"));
+const AnamCoinsRedeem = lazy(() => import("../pages/user/anamcoins"));
+const Referrals = lazy(() => import("../pages/user/anamcoins"));
 
 // other pages
 const IntroHome = lazy(() => import("../pages/landing/IntroHome"));
@@ -100,6 +105,17 @@ const router = createBrowserRouter([
             { path: "threads", element: <ThreadsManagement /> },
             { path: "reports", element: <ReportsManagement /> },
             { path: "users", element: <RolesManagement /> },
+        ],
+    },
+    // user dashboard pages
+    {
+        path: "/user",
+        element: <UserLayout />,
+        children: [
+            { path: "dashboard", element: <Dashbaord /> }, // /user/dashboard
+            { path: "anamcoins", element: <AnamCoinsRedeem /> }, // /user/anamcoins
+            { path: "referrals", element: <Referrals /> },       // /user/referrals
+            // Add more user routes here if needed
         ],
     },
 ]);

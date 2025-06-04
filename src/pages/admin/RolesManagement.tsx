@@ -183,43 +183,43 @@ const RolesManagement = () => {
     };
 
     const RoleTag: React.FC<{ role: string }> = ({ role }) => {
-    let bgColor = 'bg-gray-500/20';
-    let textColor = 'text-gray-300';
-    let borderColor = 'border-gray-500';
-    let glowColor = 'rgba(156, 163, 175, 0.3)';
+        let bgColor = 'bg-gray-500/20';
+        let textColor = 'text-gray-300';
+        let borderColor = 'border-gray-500';
+        let glowColor = 'rgba(156, 163, 175, 0.3)';
 
-    if (role === 'superadmin') {
-        bgColor = 'bg-gradient-to-r from-yellow-400/30 to-orange-500/30';
-        textColor = 'text-yellow-300';
-        borderColor = 'border-yellow-400/70';
-        glowColor = 'rgba(251, 191, 36, 0.4)';
-    } else if (role === 'user') {
-        bgColor = 'bg-gradient-to-r from-cyan-400/30 to-blue-500/30';
-        textColor = 'text-cyan-300';
-        borderColor = 'border-cyan-400/70';
-        glowColor = 'rgba(0, 220, 255, 0.4)';
-    } else if (role) {
-        bgColor = 'bg-gradient-to-r from-blue-400/30 to-purple-500/30';
-        textColor = 'text-blue-300';
-        borderColor = 'border-blue-400/70';
-        glowColor = 'rgba(59, 130, 246, 0.4)';
-    }
-
-    return (
-        <div
-            className={`px-2 sm:px-3 md:px-4 py-1 sm:py-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider ${bgColor} ${textColor} border ${borderColor} capitalize`}
-            style={{
-                clipPath: 'polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)',
-                boxShadow: `0 0 10px ${glowColor}, inset 0 1px 0 rgba(255,255,255,0.1)`,
-                textShadow: '0 0 6px currentColor',
-            }}
-        >
-            {role}
-        </div>
-    );
-};
+        if (role === 'superadmin') {
+            bgColor = 'bg-gradient-to-r from-yellow-400/30 to-orange-500/30';
+            textColor = 'text-yellow-300';
+            borderColor = 'border-yellow-400/70';
+            glowColor = 'rgba(251, 191, 36, 0.4)';
+        } else if (role === 'user') {
+            bgColor = 'bg-gradient-to-r from-cyan-400/30 to-blue-500/30';
+            textColor = 'text-cyan-300';
+            borderColor = 'border-cyan-400/70';
+            glowColor = 'rgba(0, 220, 255, 0.4)';
+        } else if (role) {
+            bgColor = 'bg-gradient-to-r from-blue-400/30 to-purple-500/30';
+            textColor = 'text-blue-300';
+            borderColor = 'border-blue-400/70';
+            glowColor = 'rgba(59, 130, 246, 0.4)';
+        }
 
         return (
+            <div
+                className={`px-2 sm:px-3 md:px-4 py-1 sm:py-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider ${bgColor} ${textColor} border ${borderColor} capitalize`}
+                style={{
+                    clipPath: 'polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)',
+                    boxShadow: `0 0 10px ${glowColor}, inset 0 1px 0 rgba(255,255,255,0.1)`,
+                    textShadow: '0 0 6px currentColor',
+                }}
+            >
+                {role}
+            </div>
+        );
+    };
+
+    return (
         <div className="w-full min-h-[calc(100vh-100px)] p-2 sm:p-4 md:p-8" style={{ backgroundColor: '#0A0E1A' }}>
             <div className="mb-4 sm:mb-6 md:mb-8 flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
                 {/* Hexagonal Icon Wrapper */}
@@ -342,7 +342,7 @@ const RolesManagement = () => {
                                         {/* Avatar with cyberpunk frame */}
                                         <div className="relative mb-3 sm:mb-4 md:mb-6">
                                             <div
-                                                className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-500 opacity-80 sm:w-[70px] sm:h-[70px] sm:-ml-[4px] sm:-mt-[4px] md:w-[90px] md:h-[90px] md:-ml-[5px] md:-mt-[5px]"
+                                                className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-500 opacity-80"
                                                 style={{
                                                     clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)',
                                                     width: '50px',
@@ -352,23 +352,40 @@ const RolesManagement = () => {
                                                 }}
                                             />
                                             <div
-                                                className="relative bg-slate-900 sm:w-[62px] sm:h-[62px] md:w-[80px] md:h-[80px]"
+                                                className="relative bg-slate-900"
                                                 style={{
                                                     clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)',
                                                     width: '44px',
                                                     height: '44px',
                                                     padding: '2px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    overflow: 'hidden',
                                                 }}
                                             >
-                                                <Avatar
-                                                    size={40}
-                                                    src={user.avatar_url}
-                                                    icon={<UserOutlined />}
-                                                    className="sm:!w-[58px] sm:!h-[58px] md:!w-[76px] md:!h-[76px]"
-                                                    style={{
-                                                        clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)',
-                                                    }}
-                                                />
+                                                {user.avatar_url ? (
+                                                    <img
+                                                        src={user.avatar_url}
+                                                        alt="avatar"
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            objectFit: 'cover',
+                                                            clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)',
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <Avatar
+                                                        icon={<UserOutlined />}
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            fontSize: 24,
+                                                            background: 'transparent',
+                                                        }}
+                                                    />
+                                                )}
                                             </div>
                                         </div>
 
