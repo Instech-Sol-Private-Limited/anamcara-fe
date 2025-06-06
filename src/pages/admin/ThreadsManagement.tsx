@@ -14,6 +14,7 @@ import { FaEye } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import threadImg from '/public/icons/admin/2.jpeg';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
+import AdminCategoryFilter from '../../components/forum/AdminCategoryFilter';
 interface ThreadType {
     key: string; // This should be a unique identifier, ideally the thread's actual ID
     id: number; // A sequential ID for display purposes
@@ -39,6 +40,9 @@ const ThreadsManagement = () => {
     const [totalThreads, setTotalThreads] = useState(0);
     const [loading, setLoading] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [categories, setCategories] = useState<{ id: string, category_name: string }[]>([]);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [filteredThreads, setFilteredThreads] = useState<ThreadType[]>([]);
 
     const toggleThreadStatus = async (threadId: string, currentStatus: boolean) => {
         try {
@@ -58,6 +62,33 @@ const ThreadsManagement = () => {
             console.error('Error updating thread status:', error);
         }
     };
+
+
+    const fetchCategories = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('threadcategory')
+                .select('id, category_name')
+                .order('category_name');
+
+            if (error) throw error;
+            if (data) setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
+
+
+    const handleCategoryToggle = (categoryName: string) => {
+        setSelectedCategories(prev => {
+            if (prev.includes(categoryName)) {
+                return prev.filter(cat => cat !== categoryName);
+            } else {
+                return [...prev, categoryName];
+            }
+        });
+    };
+
 
     const handleDeleteThread = async (threadId: string) => {
         try {
@@ -397,6 +428,7 @@ const ThreadsManagement = () => {
 
     useEffect(() => {
         fetchData();
+        fetchCategories();
     }, [currentPage, pageSize, location]);
 
     useEffect(() => {
@@ -405,8 +437,22 @@ const ThreadsManagement = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    useEffect(() => {
+        if (selectedCategories.length === 0) {
+            setFilteredThreads(threads);
+        } else {
+            const filtered = threads.filter(thread =>
+                selectedCategories.includes(thread.category_name)
+            );
+            setFilteredThreads(filtered);
+        }
+    }, [threads, selectedCategories]);
+
+
+
+
     return (
-       <div className="w-full rounded-2xl bg-[#111823] min-h-[calc(100vh-125px)] p-1 xs:p-1 md:p-2 lg:p-6 relative overflow-hidden sm:p-2 [@media(max-width:350px)]:p-0">
+        <div className="w-full rounded-2xl bg-[#111823] min-h-[calc(100vh-125px)] p-1 xs:p-1 md:p-2 lg:p-6 relative overflow-hidden sm:p-2 [@media(max-width:350px)]:p-0">
             {/* Animated Background Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-10 left-10 w-32 h-32 bg-[#0766FF]/10 rounded-full blur-xl animate-pulse"></div>
@@ -491,8 +537,12 @@ const ThreadsManagement = () => {
                             <div className="flex items-center justify-between">
                                 <div className="min-w-0 flex-1">
                                     <p className="text-cyan-300 text-xs sm:text-sm mb-1 sm:mb-2 font-mowaq tracking-wider truncate">THREADS.COUNT</p>
-                                    <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white font-mono">{totalThreads}</p>
-                                    <div className="text-[10px] sm:text-xs text-cyan-500 font-mowaq mt-1 truncate">SYSTEM.TRACKED</div>
+                                    <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white font-mono">
+                                        {selectedCategories.length > 0 ? filteredThreads.length : totalThreads}
+                                    </p>
+                                    <div className="text-[10px] sm:text-xs text-cyan-500 font-mowaq mt-1 truncate">
+                                        {selectedCategories.length > 0 ? 'FILTERED.COUNT' : 'SYSTEM.TRACKED'}
+                                    </div>
                                 </div>
 
                                 <div
@@ -634,6 +684,12 @@ const ThreadsManagement = () => {
                 </div>
 
             </div>
+            <AdminCategoryFilter
+                categories={categories}
+                selectedCategories={selectedCategories}
+                onToggle={handleCategoryToggle}
+                isLoading={loading}
+            />
 
             {/* Table Container */}
             <div className="relative z-10">
@@ -680,17 +736,22 @@ const ThreadsManagement = () => {
                         <div className="p-2 sm:p-4 md:p-6">
                             <Table
                                 columns={windowWidth < 768 ? mobileColumns : columns}
-                                dataSource={threads}
+                                dataSource={filteredThreads} // Changed from 'threads' to 'filteredThreads'
                                 loading={loading}
                                 pagination={{
                                     current: currentPage,
                                     pageSize: pageSize,
-                                    total: totalThreads,
+                                    total: filteredThreads.length, // Changed from 'totalThreads' to 'filteredThreads.length'
                                     showSizeChanger: false,
                                     pageSizeOptions: ['10', '20', '50'],
                                     showTotal: (total, range) => (
                                         <span className="text-cyan-400 font-mono text-xs sm:text-sm tracking-wider">
                                             <span className="hidden sm:inline">DISPLAYING </span>[{range[0]}-{range[1]}] OF [{total}]<span className="hidden sm:inline"> RECORDS</span>
+                                            {selectedCategories.length > 0 && (
+                                                <span className="ml-2 text-[#00DCFF]">
+                                                    | FILTERED
+                                                </span>
+                                            )}
                                         </span>
                                     ),
                                     className: "custom-pagination",
@@ -739,11 +800,26 @@ const ThreadsManagement = () => {
                 </div>
             </div>
 
-           <style>{`
+            <style>{`
     .custom-dark-table .ant-table {
         background: transparent !important;
         color: white !important;
     }
+        .custom-dark-table .ant-empty-description {
+  color: #fff !important;
+  font-weight: 600;
+}
+  .custom-dark-table .ant-empty-image > svg {
+  filter: drop-shadow(0 0 6px #00dcff88);
+}
+.custom-dark-table .ant-empty-image > svg path,
+.custom-dark-table .ant-empty-image > svg ellipse,
+.custom-dark-table .ant-empty-image > svg circle,
+.custom-dark-table .ant-empty-image > svg rect {
+  fill: #00DCFF !important; /* Use your main theme color */
+  stroke: #00DCFF !important;
+  opacity: 1 !important;
+}
     .custom-dark-table .ant-table-thead > tr > th {
         background: linear-gradient(135deg, #0766FF20, #00DCFF10) !important;
         border-bottom: 2px solid #0766FF40 !important;

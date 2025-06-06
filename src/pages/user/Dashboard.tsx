@@ -4,11 +4,11 @@ import { useAuth } from '../../context/AuthProvider';
 import { LoadingOutlined } from '@ant-design/icons';
 import referralService, { ReferralData } from '../../utils/Refferal';
 import { getUserSoulpoints, getSoulpointsHistory, SoulpointsData, SoulpointsHistory } from '../../utils/soulpoints';
-
+import anamCoinsService, { AnamCoinsData } from '../../utils/anamcoins';
 interface ReferralStats {
     totalReferrals: number;
     activeReferrals: number;
-    totalEarnings: number;
+    totalEarnings: number; // This will now represent soulpoints instead of anamcoins
     pendingRewards: number;
 }
 
@@ -122,7 +122,7 @@ const UserDashboard = () => {
     const [soulpoints, setSoulpoints] = useState<SoulpointsData | null>(null);
     const [soulpointsHistory, setSoulpointsHistory] = useState<SoulpointsHistory[]>([]);
     const [autoScrollIndex, setAutoScrollIndex] = useState(0);
-
+    const [anamCoinsData, setAnamCoinsData] = useState<AnamCoinsData | null>(null);
     const productsToShow = [...dummyProducts, ...dummyProducts]; // duplicate for infinite effect
     const productRowRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -165,7 +165,6 @@ const UserDashboard = () => {
     useEffect(() => {
         const loadDashboardData = async () => {
             if (!userData?.id) return;
-
             try {
                 setLoading(true);
                 setLoadingError(null);
@@ -173,31 +172,33 @@ const UserDashboard = () => {
                 // Get referral stats from your service
                 const stats = await referralService.getReferralStats(userData.id);
 
+                // Get soulpoints data and history
+                const [soulpointsResponse, historyResponse] = await Promise.all([
+                    getUserSoulpoints(userData.id),
+                    getSoulpointsHistory(userData.id, 10)
+                ]);
+
                 if (stats) {
                     // Generate referral link using the actual referral code
                     const link = referralService.generateReferralLink(stats.referralCode);
                     setReferralLink(link);
 
-                    // Calculate earnings (10 coins per referral for example)
-                    const totalEarnings = stats.totalReferrals * 10;
-
+                    // Calculate earnings (use actual soulpoints)
                     setReferralStats({
                         totalReferrals: stats.totalReferrals,
-                        activeReferrals: stats.totalReferrals, // Assuming all referrals are active
-                        totalEarnings: totalEarnings,
-                        pendingRewards: Math.floor(totalEarnings * 0.2) // 20% pending for example
+                        activeReferrals: stats.totalReferrals,
+                        totalEarnings: soulpointsResponse.data?.points || 0, // Use actual soulpoints
+                        pendingRewards: 0 // Remove pending rewards or calculate from actual data
                     });
                 }
 
+                const anamCoinsResponse = await anamCoinsService.getUserAnamCoins(userData.id);
+                if (anamCoinsResponse.success) {
+                    setAnamCoinsData(anamCoinsResponse.data ?? null);
+                }
                 // Get recent referrals
                 const referrals = await referralService.getUserReferrals(userData.id, 5);
                 setRecentReferrals(referrals);
-
-                // ADD THESE LINES - Get soulpoints data
-                const [soulpointsResponse, historyResponse] = await Promise.all([
-                    getUserSoulpoints(userData.id),
-                    getSoulpointsHistory(userData.id, 10)
-                ]);
 
                 if (soulpointsResponse.success && soulpointsResponse.data) {
                     setSoulpoints(soulpointsResponse.data);
@@ -465,7 +466,7 @@ const UserDashboard = () => {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                     <CyberStatCard
                         icon={FaUsers}
                         title="TOTAL REFERRALS"
@@ -486,23 +487,13 @@ const UserDashboard = () => {
                     />
                     <CyberStatCard
                         icon={FaCoins}
-                        title="ANAMCOINS"
-                        value={referralStats.totalEarnings}
-                        subtitle="AnamCoins earned"
+                        title="TOTAL ANAMCOINS"
+                        value={anamCoinsData?.total_coins || 0}
+                        subtitle="Lifetime AnamCoins"
                         accentColor="text-amber-400"
                         glowColor="bg-amber-400"
                         bgClass="bg-gradient-to-br from-amber-500/20 to-orange-600/20"
                     />
-                    <CyberStatCard
-                        icon={FaGift}
-                        title="PENDING REWARDS"
-                        value={referralStats.pendingRewards}
-                        subtitle="Awaiting processing"
-                        accentColor="text-purple-400"
-                        glowColor="bg-purple-400"
-                        bgClass="bg-gradient-to-br from-purple-500/20 to-indigo-600/20"
-                    />
-                    {/* NEW SOULPOINTS CARD */}
                     <CyberStatCard
                         icon={FaFire}
                         title="TOTAL SOULPOINTS"
@@ -586,7 +577,7 @@ const UserDashboard = () => {
 
 
                 {/* Recent Activity Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                     {/* Recent Referrals */}
                     <div className="relative">
                         <div className="bg-slate-900/90 border-2 border-slate-600/50 rounded-lg backdrop-blur-lg overflow-hidden">
@@ -617,7 +608,7 @@ const UserDashboard = () => {
                                                     </p>
                                                 </div>
                                                 <div className="px-2 py-1 rounded text-xs font-mono font-bold border bg-green-500/20 text-green-400 border-green-500/30">
-                                                    +10 SP
+                                                    +30 SP
                                                 </div>
                                             </div>
                                         </div>
@@ -634,7 +625,7 @@ const UserDashboard = () => {
                     </div>
 
                     {/* Referral Earnings History */}
-                    <div className="relative">
+                    {/* <div className="relative">
                         <div className="bg-slate-900/90 border-2 border-slate-600/50 rounded-lg backdrop-blur-lg overflow-hidden">
                             <div className="bg-gradient-to-r from-amber-500/10 to-orange-600/10 border-b border-slate-600/50 p-3 sm:p-4">
                                 <div className="flex items-center space-x-2 sm:space-x-3">
@@ -675,7 +666,7 @@ const UserDashboard = () => {
                                 )}
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* NEW SOULPOINTS ACTIVITY LOG */}
                     <div className="relative">

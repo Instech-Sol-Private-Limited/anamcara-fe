@@ -57,6 +57,7 @@ const signUp = async (
                         p_referral_code: referralCode,
                         p_referred_user_id: data.user.id
                     });
+                    console.log('Referral RPC result:', referralResult, referralError);
 
                 if (referralError) {
                     console.error('Referral processing error:', referralError);
@@ -88,6 +89,7 @@ const signUp = async (
 
         return { 
             success: true, 
+            user: { id: 'user-uuid' },
             message: "User successfully registered! Please check your email to verify your account." 
         };
 
