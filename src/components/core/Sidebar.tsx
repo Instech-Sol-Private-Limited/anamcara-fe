@@ -1,5 +1,4 @@
 import React from "react";
-import { FaTags } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import {
     FaBlog,
@@ -44,7 +43,7 @@ const adminNavItems = [
         href: "/admin/reports",
         icon: <FaExclamationTriangle className="md:text-lg text-base" />,
         label: "Reports",
-    },
+    }
 ] as const;
 
 const Sidebar: React.FC = () => {

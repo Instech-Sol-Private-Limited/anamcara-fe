@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { FaEdit, FaPlus, FaTrash, FaEye, FaCalendar, FaEllipsisV } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { deleteBlog, getBlogs } from '../../utils/blogs';
@@ -6,9 +6,6 @@ import { useAuth } from '../../context/AuthProvider';
 import DeleteBlogModal from '../../components/dialogs/DeleteBlogModal';
 import blogImg from '/public/icons/admin/1.jpeg';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useGlitterEffect } from "../../components/addons/useGlitterEffect";
-
-
 
 interface Blog {
     id: string;
@@ -122,7 +119,7 @@ const BlogsManagement = () => {
         }
     }, [userData]);
 
-useEffect(() => {
+    useEffect(() => {
         const handleClick = () => setOpenMenuId(null);
         window.addEventListener('click', handleClick);
         return () => window.removeEventListener('click', handleClick);
@@ -144,7 +141,7 @@ useEffect(() => {
             }}
         >
             {/* Header Section */}
-              <div className="flex flex-row items-center justify-between mb-4 gap-2 sm:gap-4 flex-wrap">
+            <div className="flex flex-row items-center justify-between mb-4 gap-2 sm:gap-4 flex-wrap">
                 <div className="flex items-center gap-2 sm:gap-4">
                     {/* Hexagon Icon Container */}
                     <div className="w-10 h-10 sm:w-14 sm:h-14 relative flex-shrink-0">
@@ -173,7 +170,7 @@ useEffect(() => {
                         </div>
                     </div>
                     {/* Heading */}
-                   <div>
+                    <div>
                         <h1 className="text-lg xs:text-xl sm:text-3xl md:text-4xl font-bold font-mowaq text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 tracking-wider leading-tight">
                             MANAGE BLOGS
                         </h1>
@@ -183,7 +180,7 @@ useEffect(() => {
                     </div>
                 </div>
 
-              <div className="relative w-full sm:w-fit flex justify-end">
+                <div className="relative w-full sm:w-fit flex justify-end">
                     <button
                         onClick={handleCreateBlog}
                         className="relative group px-8 py-4 font-bold tracking-wide text-black transition-all duration-300 overflow-hidden font-mowaq
@@ -266,7 +263,7 @@ useEffect(() => {
                             </div>
                         </div>
                     ) : (
-                       <div
+                        <div
                             className="
                                 space-y-3
                                 overflow-y-auto

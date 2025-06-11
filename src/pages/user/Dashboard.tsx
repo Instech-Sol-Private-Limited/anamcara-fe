@@ -5,10 +5,11 @@ import { LoadingOutlined } from '@ant-design/icons';
 import referralService, { ReferralData } from '../../utils/Refferal';
 import { getUserSoulpoints, getSoulpointsHistory, SoulpointsData, SoulpointsHistory } from '../../utils/soulpoints';
 import anamCoinsService, { AnamCoinsData } from '../../utils/anamcoins';
+
 interface ReferralStats {
     totalReferrals: number;
     activeReferrals: number;
-    totalEarnings: number; // This will now represent soulpoints instead of anamcoins
+    totalEarnings: number;
     pendingRewards: number;
 }
 
@@ -105,7 +106,6 @@ const dummyProducts = [
     }
 ];
 
-
 const UserDashboard = () => {
     const { userData } = useAuth();
     const [loading, setLoading] = useState(true);
@@ -121,103 +121,9 @@ const UserDashboard = () => {
     const [loadingError, setLoadingError] = useState<string | null>(null);
     const [soulpoints, setSoulpoints] = useState<SoulpointsData | null>(null);
     const [soulpointsHistory, setSoulpointsHistory] = useState<SoulpointsHistory[]>([]);
-    const [autoScrollIndex, setAutoScrollIndex] = useState(0);
     const [anamCoinsData, setAnamCoinsData] = useState<AnamCoinsData | null>(null);
-    const productsToShow = [...dummyProducts, ...dummyProducts]; // duplicate for infinite effect
+    const productsToShow = [...dummyProducts, ...dummyProducts];
     const productRowRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        const row = productRowRef.current;
-        if (!row) return;
-
-        const card = row.firstChild as HTMLElement | null;
-        if (!card) return;
-        const cardWidth = card.offsetWidth + 24; // 24px for gap
-
-        let scrollAmount = cardWidth * dummyProducts.length; // Start at the middle set
-        row.scrollLeft = scrollAmount;
-
-        let isUnmounted = false;
-
-        const scroll = () => {
-            if (!row) return;
-            scrollAmount += cardWidth;
-            row.scrollTo({ left: scrollAmount, behavior: 'smooth' });
-
-            // If we've scrolled past the second set, reset instantly to the start of the middle set
-            if (scrollAmount >= cardWidth * dummyProducts.length * 2) {
-                setTimeout(() => {
-                    if (isUnmounted) return;
-                    row.scrollTo({ left: cardWidth * dummyProducts.length, behavior: 'auto' });
-                    scrollAmount = cardWidth * dummyProducts.length;
-                }, 400); // wait for smooth scroll to finish
-            }
-        };
-
-        const interval = setInterval(scroll, 2000);
-
-        return () => {
-            isUnmounted = true;
-            clearInterval(interval);
-        };
-    }, []);
-
-
-    useEffect(() => {
-        const loadDashboardData = async () => {
-            if (!userData?.id) return;
-            try {
-                setLoading(true);
-                setLoadingError(null);
-
-                // Get referral stats from your service
-                const stats = await referralService.getReferralStats(userData.id);
-
-                // Get soulpoints data and history
-                const [soulpointsResponse, historyResponse] = await Promise.all([
-                    getUserSoulpoints(userData.id),
-                    getSoulpointsHistory(userData.id, 10)
-                ]);
-
-                if (stats) {
-                    // Generate referral link using the actual referral code
-                    const link = referralService.generateReferralLink(stats.referralCode);
-                    setReferralLink(link);
-
-                    // Calculate earnings (use actual soulpoints)
-                    setReferralStats({
-                        totalReferrals: stats.totalReferrals,
-                        activeReferrals: stats.totalReferrals,
-                        totalEarnings: soulpointsResponse.data?.points || 0, // Use actual soulpoints
-                        pendingRewards: 0 // Remove pending rewards or calculate from actual data
-                    });
-                }
-
-                const anamCoinsResponse = await anamCoinsService.getUserAnamCoins(userData.id);
-                if (anamCoinsResponse.success) {
-                    setAnamCoinsData(anamCoinsResponse.data ?? null);
-                }
-                // Get recent referrals
-                const referrals = await referralService.getUserReferrals(userData.id, 5);
-                setRecentReferrals(referrals);
-
-                if (soulpointsResponse.success && soulpointsResponse.data) {
-                    setSoulpoints(soulpointsResponse.data);
-                }
-
-                if (historyResponse.success) {
-                    setSoulpointsHistory(historyResponse.data);
-                }
-
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-                setLoadingError('Failed to load dashboard data. Please try again.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadDashboardData();
-    }, [userData?.id]);
 
     const copyReferralLink = async () => {
         try {
@@ -234,12 +140,11 @@ const UserDashboard = () => {
         if (!row) return;
         const card = row.firstChild as HTMLElement | null;
         if (!card) return;
-        // Responsive scroll amount: smaller on mobile
         const isMobile = window.innerWidth <= 400;
         const cardWidth = card.offsetWidth + (isMobile ? 12 : 24);
         row.scrollBy({ left: direction === 'left' ? -cardWidth * 2 : cardWidth * 2, behavior: 'smooth' });
     };
-    // Cyber-themed stat card component
+
     const CyberStatCard = ({ icon: Icon, title, value, subtitle, accentColor, glowColor, bgClass }: any) => {
         const cutSize = 'clamp(12px, 3vw, 20px)';
         const clipPathValue = `polygon(0% 0%, calc(100% - ${cutSize}) 0%, 100% ${cutSize}, 100% 100%, ${cutSize} 100%, 0% calc(100% - ${cutSize}))`;
@@ -292,12 +197,11 @@ const UserDashboard = () => {
         );
     };
 
-
     const CyberProductCard = ({ product }: { product: typeof dummyProducts[0] }) => {
         const Icon = product.icon;
         const borderColorClass = `border-${product.themeColor}-500/50`;
         const hoverBorderColorClass = `hover:border-${product.themeColor}-400/70`;
-        const bgColorClass = `bg-gradient-to-br from-${product.themeColor}-500/10 to-${product.themeColor}-600/10`;
+        // const bgColorClass = `bg-gradient-to-br from-${product.themeColor}-500/10 to-${product.themeColor}-600/10`;
         const textColorClass = `text-${product.themeColor}-400`;
 
         return (
@@ -340,6 +244,91 @@ const UserDashboard = () => {
         );
     };
 
+    useEffect(() => {
+        const row = productRowRef.current;
+        if (!row) return;
+
+        const card = row.firstChild as HTMLElement | null;
+        if (!card) return;
+        const cardWidth = card.offsetWidth + 24;
+
+        let scrollAmount = cardWidth * dummyProducts.length; 
+        row.scrollLeft = scrollAmount;
+
+        let isUnmounted = false;
+
+        const scroll = () => {
+            if (!row) return;
+            scrollAmount += cardWidth;
+            row.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+
+            if (scrollAmount >= cardWidth * dummyProducts.length * 2) {
+                setTimeout(() => {
+                    if (isUnmounted) return;
+                    row.scrollTo({ left: cardWidth * dummyProducts.length, behavior: 'auto' });
+                    scrollAmount = cardWidth * dummyProducts.length;
+                }, 400);
+            }
+        };
+
+        const interval = setInterval(scroll, 2000);
+
+        return () => {
+            isUnmounted = true;
+            clearInterval(interval);
+        };
+    }, []);
+
+    useEffect(() => {
+        const loadDashboardData = async () => {
+            if (!userData?.id) return;
+            try {
+                setLoading(true);
+                setLoadingError(null);
+                const stats = await referralService.getReferralStats(userData.id);
+                const [soulpointsResponse, historyResponse] = await Promise.all([
+                    getUserSoulpoints(userData.id),
+                    getSoulpointsHistory(userData.id, 10)
+                ]);
+
+                if (stats) {
+                    const link = referralService.generateReferralLink(stats.referralCode);
+                    setReferralLink(link);
+
+                    setReferralStats({
+                        totalReferrals: stats.totalReferrals,
+                        activeReferrals: stats.totalReferrals,
+                        totalEarnings: soulpointsResponse.data?.points || 0,
+                        pendingRewards: 0
+                    });
+                }
+
+                const anamCoinsResponse = await anamCoinsService.getUserAnamCoins(userData.id);
+                if (anamCoinsResponse.success) {
+                    setAnamCoinsData(anamCoinsResponse.data ?? null);
+                }
+
+                const referrals = await referralService.getUserReferrals(userData.id, 5);
+                setRecentReferrals(referrals);
+
+                if (soulpointsResponse.success && soulpointsResponse.data) {
+                    setSoulpoints(soulpointsResponse.data);
+                }
+
+                if (historyResponse.success) {
+                    setSoulpointsHistory(historyResponse.data);
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                setLoadingError('Failed to load dashboard data. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadDashboardData();
+    }, [userData?.id]);
 
     if (loading) {
         return (
@@ -398,9 +387,6 @@ const UserDashboard = () => {
 
     return (
         <div className="min-h-screen bg-slate-950 relative overflow-hidden">
-
-
-
             <video
                 autoPlay
                 loop

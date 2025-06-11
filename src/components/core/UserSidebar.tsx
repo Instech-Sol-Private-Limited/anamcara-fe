@@ -5,6 +5,8 @@ import {
     FaCoins,
     FaUsers,
 } from "react-icons/fa";
+import { MdLeaderboard } from "react-icons/md";
+import { TbLogs } from "react-icons/tb";
 
 const userNavItems = [
     {
@@ -22,9 +24,19 @@ const userNavItems = [
         label: "AnamCoins Redeem",
     },
     {
+        href: "/user/user-activity-logs",
+        icon: <TbLogs className="md:text-lg text-base" />,
+        label: "User activity Logs",
+    },
+    {
         href: "/user/referrals",
         icon: <FaUsers className="md:text-lg text-base" />,
         label: "Referrals",
+    },
+    {
+        href: "/user/leadership-board",
+        icon: <MdLeaderboard className="md:text-lg text-base" />,
+        label: "Leadership Board",
     },
 ] as const;
 
