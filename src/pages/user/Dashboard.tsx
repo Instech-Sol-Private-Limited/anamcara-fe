@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { FaUsers, FaCoins, FaCopy, FaRocket, FaFire, FaShare, FaGift, FaTags, FaGamepad, FaTicketAlt } from 'react-icons/fa'; // Added new icons
+import { FaUsers, FaCoins, FaCopy, FaRocket, FaFire, FaShare, FaGift, FaTags, FaGamepad, FaTicketAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa'; // Added new icons
 import { useAuth } from '../../context/AuthProvider';
 import { LoadingOutlined } from '@ant-design/icons';
 import referralService, { ReferralData } from '../../utils/Refferal';
@@ -229,6 +229,16 @@ const UserDashboard = () => {
         }
     };
 
+    const scrollProducts = (direction: 'left' | 'right') => {
+        const row = productRowRef.current;
+        if (!row) return;
+        const card = row.firstChild as HTMLElement | null;
+        if (!card) return;
+        // Responsive scroll amount: smaller on mobile
+        const isMobile = window.innerWidth <= 400;
+        const cardWidth = card.offsetWidth + (isMobile ? 12 : 24);
+        row.scrollBy({ left: direction === 'left' ? -cardWidth * 2 : cardWidth * 2, behavior: 'smooth' });
+    };
     // Cyber-themed stat card component
     const CyberStatCard = ({ icon: Icon, title, value, subtitle, accentColor, glowColor, bgClass }: any) => {
         const cutSize = 'clamp(12px, 3vw, 20px)';
@@ -545,32 +555,64 @@ const UserDashboard = () => {
                     </div>
                 </div>
 
-                {/* START: Redeem Store Preview Row */}
                 <div className="mb-6 sm:mb-8">
-                    <div className="flex items-center mb-4 sm:mb-6">
-                        <div className="flex items-center space-x-2 sm:space-x-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
+                        <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
                             <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded flex items-center justify-center">
                                 <FaGift className="text-white text-xs sm:text-sm" />
                             </div>
-                            <h2 className="text-xl sm:text-2xl font-bold text-white font-mono tracking-wider">REDEEM_STORE_PREVIEW</h2>
-                            <div className="w-8 sm:w-12 h-0.5 bg-gradient-to-r from-purple-400 to-transparent"></div>
+                            <h2 className="text-xl xs:text-lg sm:text-2xl font-bold text-white font-mono tracking-wider break-words max-w-full xs:max-w-xs" style={{ wordBreak: 'break-word' }}>
+                                REDEEM_STORE_PREVIEW
+                            </h2>
+                            <div className="w-8 sm:w-12 h-0.5 bg-gradient-to-r from-purple-400 to-transparent flex-shrink-0"></div>
                         </div>
+                        {/* View More Button */}
+                        <button
+                            className="mt-3 sm:mt-0 sm:ml-auto w-full sm:w-auto px-4 py-1.5 rounded bg-purple-600/20 text-purple-300 font-mono text-xs sm:text-sm border border-purple-400/30 hover:bg-purple-600/40 transition-all"
+                            onClick={() => {
+                                window.location.href = '/redeem-store';
+                            }}
+                        >
+                            VIEW MORE
+                        </button>
                     </div>
                     <p className="text-slate-400 font-mono text-sm mb-4">
                         Browse digital items, discounts, limited drops & more. Spend your Soulpoints!
                     </p>
                     <div className="relative">
-
+                        {/* Left Scroll Button */}
+                        <button
+                            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-slate-900/80 hover:bg-purple-600/40 border border-purple-400/30 rounded-full p-2 text-purple-300 transition-all shadow-lg flex"
+                            style={{ display: window.innerWidth <= 400 ? 'flex' : undefined }}
+                            onClick={() => scrollProducts('left')}
+                            aria-label="Scroll left"
+                        >
+                            <FaChevronLeft />
+                        </button>
+                        {/* Product Row */}
                         <div
                             ref={productRowRef}
-                            className="flex space-x-4 sm:space-x-6 pb-4 cyber-scrollbar overflow-x-auto"
-                            style={{ scrollBehavior: 'smooth' }}
+                            className="flex space-x-3 xs:space-x-4 sm:space-x-6 pb-4 cyber-scrollbar overflow-x-auto"
+                            style={{
+                                scrollBehavior: 'smooth',
+                                minWidth: 0,
+                                paddingLeft: window.innerWidth <= 400 ? '32px' : undefined,
+                                paddingRight: window.innerWidth <= 400 ? '32px' : undefined,
+                            }}
                         >
                             {productsToShow.map((product, idx) => (
                                 <CyberProductCard key={product.id + '-' + idx} product={product} />
                             ))}
                         </div>
-                        {/* Optional: Left/Right Scroll Buttons (can be added for better UX if many items) */}
+                        {/* Right Scroll Button */}
+                        <button
+                            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-slate-900/80 hover:bg-purple-600/40 border border-purple-400/30 rounded-full p-2 text-purple-300 transition-all shadow-lg flex"
+                            style={{ display: window.innerWidth <= 400 ? 'flex' : undefined }}
+                            onClick={() => scrollProducts('right')}
+                            aria-label="Scroll right"
+                        >
+                            <FaChevronRight />
+                        </button>
                     </div>
                 </div>
 
