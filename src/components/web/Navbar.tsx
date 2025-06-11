@@ -10,6 +10,7 @@ const Navbar: React.FC = () => {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
     const [isResourcesOpen, setIsResourcesOpen] = useState<boolean>(false);
+    const [openDropdowns, setOpenDropdowns] = useState<{ [key: number]: boolean }>({});
     const { accessToken, role } = useAuth();
 
     const handleNavigate = (path: string) => {
@@ -18,8 +19,15 @@ const Navbar: React.FC = () => {
         setIsResourcesOpen(false);
     };
 
+    const toggleDropdown = (index: number) => {
+        setOpenDropdowns((prev) => ({
+            ...prev,
+            [index]: !prev[index],
+        }));
+    };
+
     return (
-        <div className="fixed top-0 left-0 w-full z-50 shadow-lg text-white flex items-center justify-between px-4 py-3 bg-transparent">
+        <div className="fixed top-0 left-0 w-full z-50 shadow-lg text-white flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 bg-transparent">
             {/* Logo */}
             <div
                 className="flex flex-col sm:flex-row items-center cursor-pointer space-x-2 sm:space-x-1"
@@ -31,21 +39,20 @@ const Navbar: React.FC = () => {
                 </span>
             </div>
 
-            
-            <div className="hidden lg:flex items-center space-x-8">
+            <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
                 {navlinks.map((link, index) => (
                     <div key={index} className="relative">
                         {link.hasDropdown ? (
                             <div
                                 className="flex items-center cursor-pointer"
-                                onClick={() => setIsResourcesOpen(!isResourcesOpen)}
+                                onClick={() => toggleDropdown(index)}
                             >
-                                <span className="relative group text-white text-sm whitespace-nowrap font-mowaq">
+                                <span className="relative group text-white text-sm xl:text-base whitespace-nowrap font-mowaq">
                                     {link.name}
                                     <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-[#ADFF00] transition-all duration-300 group-hover:w-full"></span>
                                 </span>
                                 <span
-                                    className={`ml-2 transform transition-transform duration-300 ${isResourcesOpen ? "rotate-180" : ""
+                                    className={`ml-2 transform transition-transform duration-300 ${openDropdowns[index] ? "rotate-180" : ""
                                         }`}
                                 >
                                     ⌃
@@ -58,15 +65,15 @@ const Navbar: React.FC = () => {
                                     e.preventDefault();
                                     handleNavigate(link.path);
                                 }}
-                                className="relative group text-white text-sm whitespace-nowrap block font-mowaq"
+                                className="relative group text-white text-sm xl:text-base whitespace-nowrap block font-mowaq"
                             >
                                 {link.name}
                                 <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-[#ADFF00] transition-all duration-300 group-hover:w-full"></span>
                             </a>
                         )}
                         {/* Dropdown Menu */}
-                        {link.hasDropdown && isResourcesOpen && (
-                            <div className="absolute top-full left-0 w-48 text-white shadow-lg rounded-lg mt-2 z-50 bg-[#111]/80">
+                        {link.hasDropdown && openDropdowns[index] && (
+                            <div className="absolute top-full left-0 w-44 xl:w-48 text-white shadow-lg rounded-lg mt-2 z-50 bg-[#111]/80">
                                 {dropdownLinks.map((dropdownLink, idx) => (
                                     <a
                                         key={idx}
@@ -74,9 +81,8 @@ const Navbar: React.FC = () => {
                                         onClick={(e) => {
                                             e.preventDefault();
                                             handleNavigate(dropdownLink.path);
-                                            setIsResourcesOpen(false);
                                         }}
-                                        className="relative block px-4 py-2 text-white group hover:bg-[#222]/50 text-xs lg:text-sm"
+                                        className="relative block px-3 xl:px-4 py-2 text-white group hover:bg-[#222]/50 text-xs lg:text-sm xl:text-base"
                                     >
                                         {dropdownLink.name}
                                         <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-[#ADFF00] transition-all duration-300 group-hover:w-full"></span>
@@ -90,31 +96,31 @@ const Navbar: React.FC = () => {
 
             {/* Call-to-Action Button (Desktop Only) */}
             <div className="hidden lg:flex">
-    {accessToken ? (
-        role === "superadmin" ? (
-            <button
-                onClick={() => navigate('/admin/dashboard')}
-                className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
-            >
-                Dashboard
-            </button>
-        ) : role === "user" ? (
-            <button
-                onClick={() => navigate('/user/dashboard')}
-                className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
-            >
-                Dashboard
-            </button>
-        ) : null
-    ) : (
-        <button
-            onClick={() => navigate('/auth/login')}
-            className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
-        >
-            Get Connected
-        </button>
-    )}
-</div>
+                {accessToken ? (
+                    role === "superadmin" ? (
+                        <button
+                            onClick={() => navigate('/admin/dashboard')}
+                            className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
+                        >
+                            Dashboard
+                        </button>
+                    ) : role === "user" ? (
+                        <button
+                            onClick={() => navigate('/user/dashboard')}
+                            className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
+                        >
+                            Dashboard
+                        </button>
+                    ) : null
+                ) : (
+                    <button
+                        onClick={() => navigate('/auth/login')}
+                        className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
+                    >
+                        Get Connected
+                    </button>
+                )}
+            </div>
 
             {/* Hamburger Menu Icon (Mobile Only) */}
             <HiOutlineMenu className="text-xl lg:hidden cursor-pointer" onClick={() => setIsMenuOpen(true)} />
