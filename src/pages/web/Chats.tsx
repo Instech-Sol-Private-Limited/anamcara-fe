@@ -73,11 +73,7 @@ const Chats: React.FC = () => {
 
     return (
         <div className="h-screen flex flex-col bg-black text-white">
-            <img
-                src={chat_robot}
-                alt="Robot"
-                className="w-[400px] h-[450px] absolute bottom-0 left-[55%] z-30"
-            />
+           
 
             {/* Header */}
             <header className="bg-black p-4 shadow-lg z-20 w-full">
