@@ -1,129 +1,64 @@
-import { useState, useRef, useEffect, FormEvent, KeyboardEvent } from 'react';
-import { FiSend } from 'react-icons/fi';
-import { FaPaperclip, FaImage, FaUpload } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaPaperPlane, FaPlus } from 'react-icons/fa';
 
-interface ChatInputProps {
-    onSendMessage: (message: string) => Promise<void>;
-}
+const ChatInput: React.FC = () => {
+    const [message, setMessage] = useState('');
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
-    const [message, setMessage] = useState<string>('');
-    const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-    const [showUploadOptions, setShowUploadOptions] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    const handleUploadToggle = () => {
-        setShowUploadOptions((prev) => !prev);
-    };
-
-    const handleAttachFile = () => {
-        alert('Attach file clicked');
-        setShowUploadOptions(false);
-    };
-
-    const handleUploadPhoto = () => {
-        alert('Upload photo clicked');
-        setShowUploadOptions(false);
-    };
-
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        if (message.trim() && !isLoading) {
-            try {
-                setIsLoading(true);
-                await onSendMessage(message.trim());
-                setMessage('');
-                if (textAreaRef.current) {
-                    textAreaRef.current.style.height = '40px';
-                }
-            } finally {
-                setIsLoading(false);
-            }
+    const handleSubmit = () => {
+        if (message.trim()) {
+            console.log('Sending message:', message);
+            // Yahan aap apna send message logic add kar sakte hain
+            setMessage('');
         }
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            handleSubmit(e as unknown as FormEvent);
+            handleSubmit();
         }
     };
 
-    useEffect(() => {
-        if (textAreaRef.current) {
-            textAreaRef.current.style.height = '40px';
-            const scrollHeight = textAreaRef.current.scrollHeight;
-            textAreaRef.current.style.height = scrollHeight > 200 ? '200px' : `${scrollHeight}px`;
-        }
-    }, [message]);
-
     return (
-        <div className="flex bg-opacity-80 z-20 relative mb-4">
-            {/* Sidebar with Upload Icons */}
-            <div className="flex flex-col items-center justify-end relative w-12 mr-2">
-                <div className="relative flex flex-col items-center mb-8 ml-16">
-                    {showUploadOptions && (
-                        <div className="flex flex-col items-center gap-2 absolute bottom-14 z-10">
-                            <button
-                                type="button"
-                                onClick={handleAttachFile}
-                                className="w-9 h-9 rounded-full border-2 border-[#A0FF06] bg-gray-900 text-[#A0FF06] flex items-center justify-center hover:bg-[#A0FF06] hover:text-black transition"
-                            >
-                                <FaPaperclip size={14} />
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleUploadPhoto}
-                                className="w-9 h-9 rounded-full border-2 border-[#A0FF06] bg-gray-900 text-[#A0FF06] flex items-center justify-center hover:bg-[#A0FF06] hover:text-black transition"
-                            >
-                                <FaImage size={14} />
-                            </button>
+        
+        <div className="w-full max-w-4xl mx-auto p-4 z-10">
+            
+            <div className="relative">
+                <div className="flex items-center bg-gray-800 rounded-full border border-[#A0FF06] shadow-[0_0_10px_#A0FF06] overflow-hidden">
+                    {/* Left Icon */}
+                    <div className="flex-shrink-0 p-3">
+                        <div className="w-8 h-8 bg-[#A0FF06] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#8FE000] transition-colors">
+                            <FaPlus className="w-4 h-4 text-black" />
                         </div>
-                    )}
-                </div>
-            </div>
+                    </div>
 
-            {/* Chat Input Box */}
-            <form onSubmit={handleSubmit} className="flex flex-col w-full max-w-[670px]">
-                <div className={`relative flex items-end rounded-lg overflow-hidden bg-gray-900 border animate-rainbow hover:animate-rainbow-reverse focus-within:animate-rainbow-reverse transition-all duration-300`}>
-                    <button
-                        type="button"
-                        onClick={handleUploadToggle}
-                        className="w-9 h-9 rounded-full mb-2 ml-1 border-2 border-[#A0FF06] bg-gray-900 text-[#A0FF06] flex items-center justify-center hover:bg-[#A0FF06] hover:text-black transition"
-                    >
-                        <FaUpload size={16} />
-                    </button>
-                    
-                    <textarea
-                        ref={textAreaRef}
-                        rows={1}
-                        className="flex-1 p-3 pl-4 pr-12 resize-none max-h-[200px] focus:outline-none bg-gray-900 text-[#A0FF06] placeholder-[#A0FF06]"
-                        placeholder="Ask me anything..."
+                    {/* Input Field */}
+                    <input
+                        type="text"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        disabled={isLoading}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Ask me anything..."
+                        className="flex-1 bg-transparent text-[#A0FF06] placeholder-gray-400 px-4 py-3 focus:outline-none text-sm sm:text-base"
                     />
-                    
+
+                    {/* Send Button */}
                     <button
-                        type="submit"
-                        className={`absolute bottom-2 right-2 p-2 rounded-full border transition-all duration-300 ${isLoading || !message.trim()
-                            ? 'bg-gray-700 text-gray-400 border-gray-700'
-                            : 'bg-[#A0FF06] text-black border-[#A0FF06] hover:bg-[#8CFF2F]'
-                            }`}
-                        disabled={isLoading || !message.trim()}
+                        onClick={handleSubmit}
+                        disabled={!message.trim()}
+                        className="flex-shrink-0 p-3 text-[#A0FF06] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        {isLoading ? (
-                            <div className="w-4 h-4 border-2 border-[#8CFF2F] border-t-transparent rounded-full animate-spin"></div>
-                        ) : (
-                            <FiSend size={16} />
-                        )}
+                        <FaPaperPlane className="w-5 h-5" />
                     </button>
                 </div>
-                <div className="flex justify-end mt-2 px-2 text-xs text-[#A0FF06]">
-                    <span>Press Enter to send, Shift + Enter for new line</span>
+                
+                {/* Helper Text */}
+                <div className="text-center mt-2">
+                    <span className="text-xs text-gray-500">
+                        Press Enter to send, Shift + Enter for new line
+                    </span>
                 </div>
-            </form>
+            </div>
         </div>
     );
 };
