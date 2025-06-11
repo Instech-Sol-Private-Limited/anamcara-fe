@@ -343,7 +343,7 @@ const AnamCoinsPage = () => {
           <div className="bg-slate-900/50 backdrop-blur-sm border border-amber-500/20 rounded-lg p-6">
             <div className="flex items-center mb-4">
               <ArrowRightLeft className="w-6 h-6 text-amber-400 mr-3" />
-              <h3 className="text-xl font-bold text-amber-400 font-mowaq">REDEEM SOULPOINTS</h3>
+              <h3 className="text-xl font-bold text-amber-400 font-mowaq">REDEEM ANAMCOINS</h3>
             </div>
             
             <div className="space-y-4">
@@ -367,7 +367,7 @@ const AnamCoinsPage = () => {
                 disabled={!maxRedeemableSP}
                 className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold py-3 px-6 rounded-lg hover:from-amber-600 hover:to-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-mono"
               >
-                {maxRedeemableSP ? 'REDEEM SOULPOINTS' : 'INSUFFICIENT SOULPOINTS'}
+                {maxRedeemableSP ? 'REDEEM ANAMCOINS' : 'INSUFFICIENT SOULPOINTS'}
               </button>
             </div>
           </div>
@@ -488,7 +488,7 @@ const AnamCoinsPage = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-slate-900 border border-amber-500/30 rounded-lg p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-amber-400 font-mono">REDEEM SOULPOINTS</h3>
+              <h3 className="text-xl font-bold text-amber-400 font-mono">REDEEM ANAMCOINS</h3>
               <button
                 onClick={() => {
                   setShowRedemptionModal(false);

@@ -221,7 +221,7 @@ const ManageCategories = () => {
     };
 
     return (
-       <div className="relative w-full min-h-[calc(100vh-125px)] p-2 xs:p-3 sm:p-4 md:p-6 bg-[#050810] overflow-hidden">
+        <div className="relative w-full min-h-[calc(100vh-125px)] p-2 xs:p-3 sm:p-4 md:p-6 bg-[#050810] overflow-hidden">
             {/* Animated Background Grid */}
             <div className="absolute inset-0 opacity-20 pointer-events-none">
                 <div className="absolute inset-0" style={{
@@ -389,33 +389,29 @@ const ManageCategories = () => {
                                     {/* More Options */}
                                     <div className="absolute top-4 left-4 z-20">
                                         <Dropdown
-                                            menu={{
-                                                items: [
-                                                    {
-                                                        key: 'edit',
-                                                        label: 'Edit',
-                                                        onClick: () => handleEdit(category)
-                                                    },
-                                                    {
-                                                        key: 'delete',
-                                                        label: 'Delete',
-                                                        onClick: () => handleDelete(category)
-                                                    },
-                                                ],
-                                                style: {
-                                                    backgroundColor: '#0A0E1A',
-                                                    border: '1px solid #00FFFF',
-                                                    borderRadius: '0',
-                                                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)'
-                                                }
-                                            }}
-                                            placement="bottomLeft"
-                                            trigger={['click']}
-                                        >
-                                            <button className="w-8 h-8 bg-black/50 border border-cyan-500/50 flex items-center justify-center text-cyan-400 hover:text-cyan-300 hover:border-cyan-400 transition-all duration-300">
-                                                <MoreOutlined style={{ fontSize: '14px' }} />
-                                            </button>
-                                        </Dropdown>
+    menu={{
+        items: [
+            { key: 'edit', label: 'Edit' },
+            { key: 'delete', label: 'Delete' },
+        ],
+        style: {
+            backgroundColor: '#0A0E1A',
+            border: '1px solid #00FFFF',
+            borderRadius: '0',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8)'
+        },
+        onClick: ({ key }) => {
+            if (key === 'edit') handleEdit(category);
+            if (key === 'delete') handleDelete(category);
+        }
+    }}
+    placement="bottomLeft"
+    trigger={['click']}
+>
+    <button className="w-8 h-8 bg-black/50 border border-cyan-500/50 flex items-center justify-center text-cyan-400 hover:text-cyan-300 hover:border-cyan-400 transition-all duration-300">
+        <MoreOutlined style={{ fontSize: '14px' }} />
+    </button>
+</Dropdown>
                                     </div>
 
                                     {/* Content */}
@@ -509,29 +505,30 @@ const ManageCategories = () => {
                         }
                     }}
                     styles={{
-                        mask: { backgroundColor: 'rgba(0, 0, 0, 0.85)' },
-                        content: {
-                            backgroundColor: '#0A0E1A',
-                            border: '2px solid #00FFFF',
-                            borderRadius: '0',
-                            boxShadow: '0 0 50px rgba(0, 255, 255, 0.3)'
-                        },
-                        header: {
-                            backgroundColor: '#0A0E1A',
-                            borderBottom: '2px solid #00FFFF',
-                            borderRadius: '0'
-                        },
-                        body: {
-                            backgroundColor: '#0A0E1A',
-                            fontFamily: 'monospace'
-                        },
-                        footer: {
-                            backgroundColor: '#0A0E1A',
-                            borderTop: '2px solid #00FFFF',
-                            borderRadius: '0'
-                        }
-                    }}
-                >
+        mask: { backgroundColor: 'rgba(0, 0, 0, 0.85)' },
+        content: {
+            backgroundColor: '#0A0E1A',
+            border: '2px solid #00FFFF',
+            borderRadius: '0',
+            boxShadow: '0 0 50px rgba(0, 255, 255, 0.3)'
+        },
+        header: {
+            backgroundColor: '#0A0E1A',
+            borderBottom: '2px solid #00FFFF',
+            borderRadius: '0'
+        },
+        body: {
+            backgroundColor: '#0A0E1A',
+            fontFamily: 'monospace',
+            borderBottom: 'none' // Remove line below input field
+        },
+        footer: {
+            backgroundColor: '#0A0E1A',
+            borderTop: 'none', // Remove line above abort button
+            borderRadius: '0'
+        }
+    }}
+>
                     <Form form={form} layout="vertical">
                         <Form.Item
                             name="category_name"
