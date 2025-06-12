@@ -12,6 +12,7 @@ const Layout = lazy(() => import("../layouts/Layout"));
 const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
 const WebLayout = lazy(() => import("../layouts/WebLayout"));
 const UserLayout = lazy(() => import("../layouts/UserLayout"));
+const AIGurusLayout = lazy(() => import("../layouts/AIGurusLayout"));
 
 // web pages
 const Home = lazy(() => import("../pages/web/Home"));
@@ -45,6 +46,7 @@ const Referrals = lazy(() => import("../pages/user/anamcoins"));
 const IntroHome = lazy(() => import("../pages/landing/IntroHome"));
 const GetStarted = lazy(() => import("../pages/landing/GetStarted"));
 const CommingSoon = lazy(() => import("../pages/ComingSoon"));
+const AiGurus = lazy(() => import("../pages/landing/AiGurus"));
 
 const router = createBrowserRouter([
     // Intro pages
@@ -72,23 +74,32 @@ const router = createBrowserRouter([
     },
     // web pages
     {
-        path: "/",
-        element: <WebLayout />,
+    path: "/",
+    element: <WebLayout />,
+    children: [
+        { path: "home", element: <Home /> },
+        { path: "about", element: <CommingSoon /> },
+        { path: "solutions", element: <CommingSoon /> },
+        { path: "features", element: <CommingSoon /> },
+        { path: "reachout", element: <CommingSoon /> },
+        { path: "blogs", element: <Blogs /> },
+        {
+            path: "membership",
+            element: (
+                <ChatProvider>
+                    <Chats />
+                </ChatProvider>
+            )
+        },
+       
+    ],
+},
+    // AI Gurus pages
+     {
+        path: "/ai-gurus",
+        element: <AIGurusLayout />,
         children: [
-            { path: "home", element: <Home /> },
-            { path: "about", element: <CommingSoon /> },
-            { path: "solutions", element: <CommingSoon /> },
-            { path: "features", element: <CommingSoon /> },
-            { path: "reachout", element: <CommingSoon /> },
-            { path: "blogs", element: <Blogs /> },
-            {
-                path: "membership",
-                element: (
-                    <ChatProvider>
-                        <Chats />
-                    </ChatProvider>
-                )
-            },
+            { path: "", element: <AiGurus /> },
         ],
     },
     // admin pages
