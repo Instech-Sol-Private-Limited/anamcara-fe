@@ -656,7 +656,8 @@ body {
   background: #1e293b;
 }
 
-.ant-table-expanded-row-fixed, .ant-table-placeholder {
+.ant-table-expanded-row-fixed,
+.ant-table-placeholder {
   width: 100% !important;
   background: transparent !important;
   border: none !important;
@@ -676,4 +677,86 @@ body {
 
 .ant-empty-description {
   opacity: 0.4 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+.swiper {
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.swiper-slide {
+  background-position: center;
+  background-size: cover;
+  width: 200px;
+  height: 280px;
+}
+
+.swiper-slide-active .guardian-card {
+  transform: scale(1.15) translateY(-20px);
+  z-index: 10;
+}
+
+.swiper-slide-active .guardian-card .card-border {
+  border-color: rgb(34 211 238);
+  box-shadow: 0 25px 50px -12px rgba(34, 211, 238, 0.4);
+}
+
+.swiper-slide-active .guardian-card .card-content {
+  background: rgba(17, 24, 39, 0.9);
+}
+
+.swiper-slide-active .guardian-card .card-icon {
+  font-size: 5rem;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-top: -25px;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: rgba(168, 85, 247, 0.4);
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  color: rgb(196, 181, 253);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.swiper-pagination-bullet {
+  background: rgb(75, 85, 99);
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+  background: rgb(34, 211, 238);
+  width: 32px;
+  border-radius: 4px;
+}
+
+.swiper-3d .swiper-slide-shadow-left,
+.swiper-3d .swiper-slide-shadow-right {
+  background-image: none;
 }
