@@ -2,32 +2,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthProvider';
-import { useChat } from '../../context/ChatProvider';
 import ChatSidebar from '../../components/web/chats/ChatSidebar';
 import ChatWindow from '../../components/web/chats/ChatWindow';
 import ChatInput from '../../components/web/chats/ChatInput';
 import DonationPanel from '../../components/web/chats/DonationPanel';
 import { FiUser } from 'react-icons/fi';
-import { logo, toggle, toggled, chat_robot, donation } from '../../../public';
+import { logo, toggle, toggled, donation } from '../../../public';
 
 const Chats: React.FC = () => {
     const navigate = useNavigate();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [isNotificationOff, setIsNotificationOff] = useState(false);
     const { userData, loading: authLoading } = useAuth();
-    const { sendMessage } = useChat();
 
     const handleSidebarToggle = () => setSidebarOpen(prev => !prev);
 
     const handleToggleNotifications = () => setIsNotificationOff(prev => !prev);
-
-    const handleSendMessage = async (message: string) => {
-        try {
-            await sendMessage(message);
-        } catch (error) {
-            console.error('Failed to send message:', error);
-        }
-    };
 
     useEffect(() => {
         const handleOutsideClick = (e: MouseEvent) => {
@@ -116,9 +106,7 @@ const Chats: React.FC = () => {
                 {/* Chat Area */}
                 <div className="flex-1 flex flex-col relative bg-black">
                     <ChatWindow />
-                    <ChatInput
-                        onSendMessage={handleSendMessage}
-                    />
+                    <ChatInput />
                 </div>
 
                 {/* Donation Panel */}

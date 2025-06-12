@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaCheckCircle, FaLock, FaGift, FaFire, FaStar, FaCoins, FaUserPlus, FaGamepad, FaTrophy, FaShieldAlt } from 'react-icons/fa';
-import { useAuth } from '../../context/AuthProvider';
+import { FaCheckCircle, FaGift, FaFire, FaStar, FaCoins, FaUserPlus, FaGamepad, FaTrophy, FaShieldAlt } from 'react-icons/fa';
 import { LoadingOutlined } from '@ant-design/icons';
 
 interface DailyQuest {
@@ -19,7 +18,6 @@ interface DailyQuest {
 }
 
 const DailyQuestsPage = () => {
-  const { userData } = useAuth();
   const [loading, setLoading] = useState(true);
   const [quests, setQuests] = useState<DailyQuest[]>([]);
   const [streak, setStreak] = useState(0);
@@ -122,7 +120,7 @@ const DailyQuestsPage = () => {
         target: quest.reward
       }
     }));
-
+      // @ts-ignore
     setQuests(selectedQuests);
   };
 

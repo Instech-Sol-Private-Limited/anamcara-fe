@@ -13,7 +13,7 @@ import { Thread } from '../../types'; // Ensure this path and type definition ar
 import { FaEye } from 'react-icons/fa';
 import { useLocation } from 'react-router-dom';
 import threadImg from '/public/icons/admin/2.jpeg';
-import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined } from '@ant-design/icons';
 import AdminCategoryFilter from '../../components/forum/AdminCategoryFilter';
 interface ThreadType {
     key: string; // This should be a unique identifier, ideally the thread's actual ID

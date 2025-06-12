@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Eye, Zap, Shield, Sword, Star, Moon, Sun, Flame, Snowflake, Wind, Heart, Diamond } from 'lucide-react';
+import { Eye, Zap, Shield, Sword, Star, Moon, Sun, Flame, Snowflake, Wind, Heart, Diamond } from 'lucide-react';
 import { CiLock } from "react-icons/ci";
 import { divine } from '../../../public';
 
 const GuardianSelector = () => {
   const [selectedGuardian, setSelectedGuardian] = useState(6);
-  const [activeIndex, setActiveIndex] = useState(6);
   const swiperRef = useRef(null);
   const [swiperInstance, setSwiperInstance] = useState(null);
 
@@ -35,7 +34,9 @@ const GuardianSelector = () => {
     const swiperScript = document.createElement('script');
     swiperScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js';
     swiperScript.onload = () => {
+      // @ts-ignore
       if (window.Swiper && swiperRef.current) {
+        // @ts-ignore
         const swiper = new window.Swiper(swiperRef.current, {
           effect: 'coverflow',
           grabCursor: true,
@@ -59,8 +60,8 @@ const GuardianSelector = () => {
           },
           on: {
             slideChange: function () {
+              // @ts-ignore
               const currentIndex = this.activeIndex;
-              setActiveIndex(currentIndex);
               setSelectedGuardian(guardians[currentIndex]?.id || guardians[6].id);
             },
           },
@@ -76,9 +77,10 @@ const GuardianSelector = () => {
     };
   }, []);
 
-  const handleCardClick = (guardian, index) => {
+  const handleCardClick = (guardian: any, index: any) => {
     if (guardian.locked) return;
     if (swiperInstance) {
+      // @ts-ignore
       swiperInstance.slideTo(index);
     }
     setSelectedGuardian(guardian.id);
@@ -88,7 +90,7 @@ const GuardianSelector = () => {
 
   return (
     <>
-      <style jsx>{`
+      <style>{`
         .swiper {
           width: 100%;
           padding-top: 50px;
@@ -216,8 +218,8 @@ const GuardianSelector = () => {
                       onClick={() => handleCardClick(guardian, index)}
                     >
                       <div className={`card-border relative w-full h-full rounded-xl border-2 transition-all duration-500 backdrop-blur-sm overflow-hidden ${guardian.locked
-                          ? 'border-gray-600 bg-gray-800/40'
-                          : 'border-purple-400/30 bg-purple-500/10 hover:border-purple-400/50'
+                        ? 'border-gray-600 bg-gray-800/40'
+                        : 'border-purple-400/30 bg-purple-500/10 hover:border-purple-400/50'
                         }`}>
 
                         {guardian.locked && (
