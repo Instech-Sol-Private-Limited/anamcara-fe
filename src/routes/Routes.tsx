@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { ChatProvider } from "../context/ChatProvider";
 import LeadershipBoard from "../pages/user/LeadershipBoard";
-
+import DailyQuest from "../pages/user/DailyQuest";
 // layouts
 const AuthLayout = lazy(() => import("../layouts/AuthLayout"));
 const Layout = lazy(() => import("../layouts/Layout"));
@@ -129,7 +129,8 @@ const router = createBrowserRouter([
             { path: "anamcoins", element: <AnamCoinsRedeem /> }, // /user/anamcoins
             { path: "user-activity-logs", element: <UserActivityLogs /> },
             { path: "referrals", element: <Referrals /> },       // /user/referrals
-            { path: "leadership-board", element: <LeadershipBoard /> },],
+            { path: "leadership-board", element: <LeadershipBoard /> },
+            { path: "daily-quest", element: <DailyQuest /> },],
     },
 ]);
 

@@ -1,179 +1,165 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaSignOutAlt, FaUser } from "react-icons/fa";
+import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { FiLogOut, FiSearch } from 'react-icons/fi';
+import { PiUserCircleDashed } from 'react-icons/pi';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthProvider';
 import PrimaryButton from '../addons/PrimaryButton';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from "react-router-dom";
-// import { logo } from "../../../public"; // <-- Add this import
+import { useNavigate } from 'react-router-dom';
+import { useUserAura } from "../../context/UserAuraContext";
+import UserAvatar from './UserAvatar';
 
-const DashboardNavbar = () => {
+const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { auraClass } = useUserAura();
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
   const { accessToken, loading, logout, userData } = useAuth();
+
+  const placeholders = [
+    "Search Threads...",
+    "Search Trending Topics...",
+    "Search Solutions...",
+  ];
 
   const toggleUserMenu = () => {
     setIsUserMenuOpen(!isUserMenuOpen);
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    if (searchValue.length > 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentPlaceholderIndex((prev) =>
+        prev === placeholders.length - 1 ? 0 : prev + 1
+      );
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [searchValue]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setIsUserMenuOpen(false);
       }
-    };
+    }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  // Animation variants
-  const dropdownVariants = {
-    hidden: {
-      opacity: 0,
-      y: -10,
-      scale: 0.95,
-      transition: { duration: 0.1 }
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        damping: 20,
-        stiffness: 300
-      }
-    },
-    exit: {
-      opacity: 0,
-      y: -10,
-      scale: 0.95,
-      transition: { duration: 0.1 }
-    }
-  };
-
-  const menuItemVariants = {
-    hidden: { x: -10, opacity: 0 },
-    visible: (i: number) => ({
-      x: 0,
-      opacity: 1,
-      transition: {
-        delay: i * 0.05,
-        ease: "easeOut"
-      }
-    }),
-    hover: {
-      backgroundColor: "rgba(255, 255, 255, 0.1)",
-      transition: { duration: 0.2 }
-    }
-  };
-
   return (
-    <nav
-      className="bg-black w-full px-6 md:py-3 py-2 border-b border-[#0766FF]/30 shadow-[0px_0px_10px_#0766FF] flex items-center justify-between z-50"
-    >
-      <div className="w-full flex items-center justify-between">
-        <Link to="/home" className="flex items-center gap-3 group">
-          {/* <img src={logo} alt="Logo" className="w-10 h-auto" /> */}
-          <span className="md:text-2xl text-xl !font-bold tracking-wide font-mowaq logo-anim">
-            ANAMCARA
-          </span>
-        </Link>
+    <nav className={`bg-main border-b border-b-pre/60 shadow-[2px_0px_10px] shadow-pre/20 fixed top-0 left-0 w-full h-[70px] px-4 md:px-6 lg:px-8 flex items-center md:gap-6 gap-3 justify-between z-[15]`}>
+      <Link to="/" className="text-pre lg:text-xl md:text-lg font-mowaq sm:text-[16px] text-sm font-bold logo-anim">
+        ANAMCARA
+      </Link>
 
-        {/* User Profile */}
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-full border border-pre/30 shadow-[0px_0px_10px] shadow-pre/40">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <FiSearch className="md:h-5 md:w-5 sm:w-4 sm:h-4 h-3 w-3 text-" />
+        </div>
+
+        <input
+          ref={searchInputRef}
+          type="text"
+          value={searchValue}
+          onChange={handleSearchChange}
+          placeholder=""
+          className="block w-full md:pl-10 sm:pl-7 pl-5 md:pr-3 pr-2 py-2 md:text-sm text-xs bg-main border-none placeholder-black/60 dark:placeholder-white/60 text-black dark:text-white outline-none"
+        />
+        <AnimatePresence mode="wait">
+          {searchValue.length === 0 && (
+            <motion.div
+              key={currentPlaceholderIndex}
+              className="absolute inset-y-0 left-10 flex items-center pointer-events-none"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => searchInputRef.current?.focus()}
+            >
+              <span className="text-black/80 dark:text-white/80 md:text-sm sm:text-xs text-[10px] text-nowrap">
+                {placeholders[currentPlaceholderIndex]}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className="flex items-center md:gap-5 gap-3">
         <div className="relative" ref={userMenuRef}>
           {loading ? (
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-300 animate-pulse" />
-              <div className="w-20 h-4 bg-gray-300 rounded-full animate-pulse hidden sm:block" />
+            <div className='py-2'>
+              <div className="md:w-7 md:h-7 w-6 h-6 rounded-full bg-black/10 dark:bg-white/10 animate-pulse" />
             </div>
           ) : (
-            !accessToken ? (
+            !accessToken ?
               <PrimaryButton
-                text="Sign in"
-                onClick={() => navigate("/auth/login")}
-                className="!py-2 !px-4 !rounded-2xl"
+                text={"Sign in"}
+                onClick={() => navigate("/login")}
+                className='!bg-pre border-2 !py-2 border-pre !text-white !font-bold'
               />
-            ) : (
-              <button
-                className="flex items-center cursor-pointer gap-3 p-3 rounded-xl transition-all duration-200 focus:outline-none"
-                onClick={toggleUserMenu}
-              >
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-[#0766FF] flex items-center justify-center">
-                  {userData.avatar_url && userData.first_name ? (
-                    <img
-                      src={userData.avatar_url}
-                      alt={userData.first_name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <FaUser className="h-4 w-4 text-white" />
-                  )}
-                </div>
-                <div className="hidden sm:block text-left font-mowaq">
-                  <div className="text-xs font-medium capitalize">
-                    {userData.first_name}{userData.last_name ? ` ${userData.last_name}` : ''}
+              : (
+                <button
+                  className="flex items-center text-sm rounded-full cursor-pointer"
+                  onClick={toggleUserMenu}
+                >
+                  <div className={`relative md:w-8 md:h-8 w-6 h-6 !rounded-full cursor-pointer overflow-hidden flex items-center justify-center transition-all duration-300 ${auraClass} `}>
+                    {userData?.avatar_url && userData?.first_name ? (
+                      <UserAvatar
+                        avatarUrl={userData.avatar_url}
+                        firstName={userData.first_name}
+                        auraClass={auraClass}
+                        size={32}
+                        className="md:w-8 md:h-8 w-6 h-6"
+                      />
+                    ) : (
+                      <PiUserCircleDashed className="h-6 w-6 text-pre transition-all duration-300 hover:text-pre" />
+                    )}
                   </div>
-                  <div className="text-[10px] opacity-70">
-                    {userData.email}
+
+                  <div className='px-3 text-left md:block hidden'>
+                    <p className="md:text-xs font-medium text-text-secondary capitalize">{userData?.first_name}{userData?.last_name ? ` ${userData.last_name}` : ''}</p>
+                    <p className="md:text-[10px] text-black/80 dark:text-white/80 truncate">{userData?.email}</p>
                   </div>
-                </div>
-              </button>
-            )
+                </button>
+              )
           )}
 
-          <AnimatePresence>
-            {isUserMenuOpen && (
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                variants={dropdownVariants}
-                className="origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-black ring-1 ring-[#0766FF] z-50"
-              >
-                <div className="py-2" role="menu">
-                  <motion.div
-                    className="px-4 py-3 border-b border-gray-800 sm:hidden text-left font-mowaq"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <div className="text-xs font-medium capitalize">
-                      {userData.first_name}{userData.last_name ? ` ${userData.last_name}` : ''}
-                    </div>
-                    <div className="text-[10px] opacity-70">
-                      {userData.email}
-                    </div>
-                  </motion.div>
-
-                  <motion.button
-                    variants={menuItemVariants}
-                    custom={0}
-                    initial="hidden"
-                    animate="visible"
-                    whileHover="hover"
-                    onClick={async () => {
-                      setIsUserMenuOpen(false);
-                      await logout(); // If logout is async (like Supabase or Firebase), await it
-                      navigate("/auth/login"); // Redirect to login page
-                    }}
-                    className="w-full flex items-center cursor-pointer px-4 py-3 text-sm text-white hover:bg-gray-800 transition-colors"
-                  >
-                    <FaSignOutAlt className="mr-3 h-4 w-4 text-[#00DCFF]" />
-                    Sign out
-                  </motion.button>
+          {isUserMenuOpen && (
+            <div className="origin-top-right absolute right-0 mt-2 w-fit z-40 rounded-md bg-main shadow-[0px_0px_10px] shadow-pre/40 animate-scaleIn">
+              <div className="py-1" role="menu">
+                <div className="px-4 md:py-3 py-2 border-b border-primary-two  md:hidden">
+                  <p className="md:text-sm text-xs font-medium text-text-secondary capitalize">{userData?.first_name}{userData?.last_name ? ` ${userData.last_name}` : ''}</p>
+                  <p className="md:text-xs text-[10px] text-black/80 dark:text-white/80 truncate">{userData?.email}</p>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+
+                <button
+                  onClick={() => {
+                    setIsUserMenuOpen(false);
+                    logout();
+                  }} className="flex w-full items-center px-4 py-2 md:text-sm sm:text-xs text-[10px] text-black/60 dark:text-white/60 hover:bg-pre/20 hover:text-black hover:dark:text-white transition-all duration-300 cursor-pointer"
+                >
+                  <FiLogOut className="mr-3 lg:text-xl md:text-lg text-[16px] text-black/80 dark:text-white/80" />
+                  Sign out
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </nav>
   );
 };
 
-export default DashboardNavbar;
+export default Navbar;

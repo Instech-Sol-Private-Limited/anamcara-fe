@@ -4,6 +4,7 @@ import {
     FaChartBar,
     FaCoins,
     FaUsers,
+    FaHome,
 } from "react-icons/fa";
 import { MdLeaderboard } from "react-icons/md";
 import { TbLogs } from "react-icons/tb";
@@ -37,6 +38,11 @@ const userNavItems = [
         href: "/user/leadership-board",
         icon: <MdLeaderboard className="md:text-lg text-base" />,
         label: "Leadership Board",
+    },
+     {
+        href: "/user/daily-quest",
+        icon: <FaHome className="md:text-lg text-base" />,
+        label: "Daily Quest",
     },
 ] as const;
 
