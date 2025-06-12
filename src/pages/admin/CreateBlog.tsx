@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createBlog, updateBlog, getBlogById } from '../../utils/blogs';
-import { FaCheck, FaArrowLeft, FaSave, FaEye } from 'react-icons/fa';
-import { Button, Card, Spin } from 'antd';
+import { FaCheck, FaArrowLeft, FaEye } from 'react-icons/fa';
+import { Spin } from 'antd';
 import blogImg from '/public/icons/admin/1.jpeg';
 import ImageUploader from '../../components/addons/ImageUploder';
 import BlogEditorPreview from '../../components/admin/BlogEditorPreview';

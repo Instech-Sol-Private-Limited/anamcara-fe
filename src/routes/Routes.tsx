@@ -4,6 +4,7 @@ import { AuthProvider } from "../context/AuthProvider";
 import { ToastContainer } from "react-toastify";
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { ChatProvider } from "../context/ChatProvider";
+import LeadershipBoard from "../pages/user/LeadershipBoard";
 
 // layouts
 const AuthLayout = lazy(() => import("../layouts/AuthLayout"));
@@ -33,6 +34,7 @@ const ReportsManagement = lazy(() => import("../pages/admin/ReportsManagement"))
 const BlogDetails = lazy(() => import("../pages/admin/BlogDetails"));
 const ThreadsManagement = lazy(() => import("../pages/admin/ThreadsManagement"));
 const BlogsManagement = lazy(() => import("../pages/admin/BlogsManagement"));
+const UserActivityLogs = lazy(() => import("../pages/user/UserActivityLogs"));
 
 // userDashboard pages
 const Dashbaord = lazy(() => import("../pages/user/Dashboard"));
@@ -94,17 +96,17 @@ const router = createBrowserRouter([
         path: "/admin",
         element: <AdminLayout />,
         children: [
-           
+
             { path: "dashboard", element: <Dashboard /> }, // optional route (/admin/dashboard)
             // { path: "home", element: <AdminHome /> },
             { path: "blogs", element: <BlogsManagement /> },
             { path: "blogs/blog-details/:id", element: <BlogDetails /> },
             { path: "blogs/create", element: <BlogEditorPage /> },
             { path: "blogs/edit/:id", element: <BlogEditorPage /> },
+            { path: "users", element: <RolesManagement /> },
             { path: "thread-categories", element: <ManageCategories /> },
             { path: "threads", element: <ThreadsManagement /> },
             { path: "reports", element: <ReportsManagement /> },
-            { path: "users", element: <RolesManagement /> },
         ],
     },
     // user dashboard pages
@@ -114,9 +116,9 @@ const router = createBrowserRouter([
         children: [
             { path: "dashboard", element: <Dashbaord /> }, // /user/dashboard
             { path: "anamcoins", element: <AnamCoinsRedeem /> }, // /user/anamcoins
+            { path: "user-activity-logs", element: <UserActivityLogs /> },
             { path: "referrals", element: <Referrals /> },       // /user/referrals
-            // Add more user routes here if needed
-        ],
+            { path: "leadership-board", element: <LeadershipBoard /> },],
     },
 ]);
 
