@@ -182,7 +182,7 @@ const Dashboard = () => {
             </div>
         );
     };
-
+    // @ts-ignore
     const CyberActionCard = ({ icon: Icon, title, description, onClick, accentColor, bgGradient }: any) => (
         <div
             onClick={onClick}
@@ -524,10 +524,10 @@ const Dashboard = () => {
                                             </div>
                                             <div
                                                 className={`px-2 py-1 rounded text-xs sm:text-sm font-mowaq font-bold border text-center w-fit ${report.total_reports >= 15
-                                                        ? 'bg-red-500/20 text-red-400 border-red-500/30'
-                                                        : report.total_reports >= 10
-                                                            ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                                            : 'bg-green-500/20 text-green-400 border-green-500/30'
+                                                    ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                                                    : report.total_reports >= 10
+                                                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                                        : 'bg-green-500/20 text-green-400 border-green-500/30'
                                                     }`}
                                             >
                                                 {report.total_reports >= 15 ? 'CRITICAL' : report.total_reports >= 10 ? 'HIGH' : 'LOW'}

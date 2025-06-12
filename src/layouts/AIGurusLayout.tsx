@@ -6,7 +6,7 @@ const AIGurusLayout = () => {
     const show = location.pathname === "/home";
 
     return (
-        <div className="w-full h-screen overflow-y-auto relative flex flex-col justify-center items-center">
+        <div className="w-full overflow-y-auto relative flex flex-col justify-center items-center">
            
             <div className="w-full">
                 <Outlet />

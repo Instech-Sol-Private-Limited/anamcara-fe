@@ -59,3 +59,5 @@ export { default as user } from '/icons/blogs/user.png';
 // chats
 export { default as chat_robot } from '/chats/chat_robot.png';
 export { default as donation } from '/chats/img1.png';
+
+export { default as divine } from '/ai-gurus/divine.png';
