@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { Coins, ArrowRightLeft, History, Flame, Rocket, Gift, Check, X, Zap, Star, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../context/AuthProvider';
 import anamCoinsService from '../../utils/anamcoins';
-import type { AnamCoinsData, AnamCoinsHistory } from '../../utils/anamcoins';
-import { getUserSoulpoints } from '../../utils/soulpoints';
+import type { AnamCoinsData, AnamCoinsHistory, RedemptionResponse } from '../../utils/anamcoins';
+import { getUserSoulpoints, SoulpointsData } from '../../utils/soulpoints';
 import { LoadingOutlined } from '@ant-design/icons';
 const AnamCoinsPage = () => {
   const { userData } = useAuth();
@@ -12,10 +12,7 @@ const AnamCoinsPage = () => {
   const [anamCoinsData, setAnamCoinsData] = useState<AnamCoinsData | null>(null);
   const [history, setHistory] = useState<AnamCoinsHistory[]>([]);
   const [soulpointsData, setSoulpointsData] = useState<SoulpointsData | null>(null);
- 
   const [error, setError] = useState<string | null>(null);
-
-  // Redemption modal state
   const [showRedemptionModal, setShowRedemptionModal] = useState(false);
   const [redemptionAmount, setRedemptionAmount] = useState('');
   const [redemptionLoading, setRedemptionLoading] = useState(false);
@@ -23,7 +20,6 @@ const AnamCoinsPage = () => {
 
   useEffect(() => {
     loadAnamCoinsData();
-    // eslint-disable-next-line
   }, [userData?.id]);
 
   const loadAnamCoinsData = async () => {
@@ -40,10 +36,10 @@ const AnamCoinsPage = () => {
       ]);
 
       if (anamCoinsResponse.success) {
-  setAnamCoinsData(anamCoinsResponse.data ?? null);
-} else {
-  setError(anamCoinsResponse.error || 'Failed to load AnamCoins data.');
-}
+        setAnamCoinsData(anamCoinsResponse.data ?? null);
+      } else {
+        setError(anamCoinsResponse.error || 'Failed to load AnamCoins data.');
+      }
 
       if (soulpointsResponse.success) {
         setSoulpointsData(soulpointsResponse.data);
@@ -70,12 +66,11 @@ const AnamCoinsPage = () => {
 
     try {
       setRedemptionLoading(true);
-      const result = await anamCoinsService.redeemSoulPointsForAnamCoins(userData.id, parseInt(redemptionAmount || '0'));
+      const result = await anamCoinsService.redeemSoulPointsForAnamCoins(userData.id as string, parseInt(redemptionAmount || '0'));
 
       setRedemptionResult(result);
 
       if (result.success) {
-        // Refresh data
         await loadAnamCoinsData();
         setTimeout(() => {
           setShowRedemptionModal(false);
@@ -95,7 +90,7 @@ const AnamCoinsPage = () => {
     }
   };
 
-  const conversionInfo = anamCoinsService.getConversionInfo();
+  // const conversionInfo = anamCoinsService.getConversionInfo();
   const maxRedeemableSP = soulpointsData ? anamCoinsService.calculateMaxRedeemableSoulPoints(soulpointsData.points) : 0;
   const potentialAC = redemptionAmount ? anamCoinsService.calculateAnamCoinsFromSoulPoints(parseInt(redemptionAmount)) : 0;
 
@@ -124,62 +119,62 @@ const AnamCoinsPage = () => {
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center h-[60vh]">
-      <div className="relative">
-        <LoadingOutlined
-          style={{
-            fontSize: window.innerWidth < 640 ? 36 : 48,
-            color: '#00FFFF',
-          }}
-          spin
-        />
-        <div className="absolute inset-0 rounded-full border-2 border-cyan-400 animate-ping" />
-      </div>
-      <div className="space-y-2 mt-2">
-        <p className="text-cyan-400 font-mono text-lg sm:text-xl font-bold tracking-wider">
-          LOADING ANAMCOINS...
-        </p>
-        <div className="flex items-center justify-center space-x-1">
-          {[0, 0.2, 0.4].map((delay, i) => (
-            <div
-              key={i}
-              className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"
-              style={{ animationDelay: `${delay}s` }}
-            ></div>
-          ))}
+        <div className="relative">
+          <LoadingOutlined
+            style={{
+              fontSize: window.innerWidth < 640 ? 36 : 48,
+              color: '#00FFFF',
+            }}
+            spin
+          />
+          <div className="absolute inset-0 rounded-full border-2 border-cyan-400 animate-ping" />
+        </div>
+        <div className="space-y-2 mt-2">
+          <p className="text-cyan-400 font-mono text-lg sm:text-xl font-bold tracking-wider">
+            LOADING ANAMCOINS...
+          </p>
+          <div className="flex items-center justify-center space-x-1">
+            {[0, 0.2, 0.4].map((delay, i) => (
+              <div
+                key={i}
+                className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"
+                style={{ animationDelay: `${delay}s` }}
+              ></div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
     );
   }
 
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center h-[60vh]">
-      <div className="relative">
-        <LoadingOutlined
-          style={{
-            fontSize: window.innerWidth < 640 ? 36 : 48,
-            color: '#00FFFF',
-          }}
-          spin
-        />
-        <div className="absolute inset-0 rounded-full border-2 border-cyan-400 animate-ping" />
-      </div>
-      <div className="space-y-2 mt-2">
-        <p className="text-cyan-400 font-mono text-lg sm:text-xl font-bold tracking-wider">
-          LOADING ANAMCOINS...
-        </p>
-        <div className="flex items-center justify-center space-x-1">
-          {[0, 0.2, 0.4].map((delay, i) => (
-            <div
-              key={i}
-              className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"
-              style={{ animationDelay: `${delay}s` }}
-            ></div>
-          ))}
+        <div className="relative">
+          <LoadingOutlined
+            style={{
+              fontSize: window.innerWidth < 640 ? 36 : 48,
+              color: '#00FFFF',
+            }}
+            spin
+          />
+          <div className="absolute inset-0 rounded-full border-2 border-cyan-400 animate-ping" />
+        </div>
+        <div className="space-y-2 mt-2">
+          <p className="text-cyan-400 font-mono text-lg sm:text-xl font-bold tracking-wider">
+            LOADING ANAMCOINS...
+          </p>
+          <div className="flex items-center justify-center space-x-1">
+            {[0, 0.2, 0.4].map((delay, i) => (
+              <div
+                key={i}
+                className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"
+                style={{ animationDelay: `${delay}s` }}
+              ></div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
     );
   }
 
@@ -248,7 +243,7 @@ const AnamCoinsPage = () => {
                 <p className="text-slate-400 font-mowaq text-sm">Digital Currency System</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-slate-400 text-sm font-mowaq">Welcome back,</p>
@@ -345,7 +340,7 @@ const AnamCoinsPage = () => {
               <ArrowRightLeft className="w-6 h-6 text-amber-400 mr-3" />
               <h3 className="text-xl font-bold text-amber-400 font-mowaq">REDEEM ANAMCOINS</h3>
             </div>
-            
+
             <div className="space-y-4">
               <div className="bg-slate-800/50 rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
@@ -361,7 +356,7 @@ const AnamCoinsPage = () => {
                   <span className="text-green-400 font-mono">{maxRedeemableSP} SP</span>
                 </div>
               </div>
-              
+
               <button
                 onClick={() => setShowRedemptionModal(true)}
                 disabled={!maxRedeemableSP}
@@ -378,7 +373,7 @@ const AnamCoinsPage = () => {
               <History className="w-6 h-6 text-blue-400 mr-3" />
               <h3 className="text-xl font-bold text-blue-400 font-mono">RECENT ACTIVITY</h3>
             </div>
-            
+
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {history.length > 0 ? (
                 history.slice(0, 5).map((transaction) => (
@@ -432,7 +427,7 @@ const AnamCoinsPage = () => {
               REFRESH
             </button>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -472,7 +467,7 @@ const AnamCoinsPage = () => {
                 ))}
               </tbody>
             </table>
-            
+
             {history.length === 0 && (
               <div className="text-center py-12">
                 <History className="w-16 h-16 text-slate-600 mx-auto mb-4" />
