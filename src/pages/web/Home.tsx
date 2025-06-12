@@ -113,6 +113,7 @@ import { GiSailboat } from "react-icons/gi";
 import { MdMotionPhotosPaused } from "react-icons/md";
 import { GiTwirlyFlower } from "react-icons/gi";
 import { home } from "../../../public";
+
 function Home() {
   const [_menuOpen, setMenuOpen] = useState(false);
   const [_isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
@@ -136,6 +137,7 @@ function Home() {
       <video autoPlay loop muted className="fixed top-0 left-0 w-full h-full object-cover z-0 ">
         <source src={home} type="video/mp4" />
       </video>
+
       <div className="w-11/12 sm:w-10/12 md:w-4/5 pt-16 sm:pt-20 lg:pt-6 h-full">
         <div className="flex flex-col lg:flex-row justify-center items-center gap-4 sm:gap-6 relative w-full">
           {/* Content Box */}
@@ -146,6 +148,7 @@ function Home() {
             <h1 className="text-white font-bold text-base sm:text-lg md:text-xl lg:text-2xl 2xl:text-2xl mt-2">
               Empowering Every Individual
             </h1>
+
             <h1 className="text-white text-sm sm:text-base md:text-lg lg:text-xl 2xl:text-xl mt-3 sm:mt-4">
               Transform Your Experience
             </h1>
@@ -162,6 +165,7 @@ function Home() {
                 type="text"
                 placeholder="Enter email"
               />
+
               <button
                 type="button"
                 className="py-2 px-4 rounded-lg cursor-pointer text-black bg-[#ADFF00] w-full sm:w-auto text-sm sm:text-base whitespace-nowrap"
@@ -182,6 +186,7 @@ function Home() {
             autoPlay
             loop
             muted
+            playsInline
             className="lg:w-1/2 lg:block hidden w-full h-auto lg:h-[500px] xl:h-[600px] rounded-xl lg:rounded-full opacity-70"
             controlsList="nodownload nofullscreen noremoteplaybook"
             disablePictureInPicture
@@ -190,8 +195,8 @@ function Home() {
           </video>
           {showNotification && (
             <div className={`fixed z-50 bottom-16 sm:bottom-20 right-4 sm:right-6`}>
-              <div className="bg-black text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg shadow-lg border-2 border-[#FF6FFF] animate-fade-in-out transition-opacity duration-500 w-max">
-                :white_check_mark: Subscription successful!
+              <div className="bg-black text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg shadow-lg border-2 border-[#ff6fff] animate-fade-in-out transition-opacity duration-500 w-max">
+                ✅ Subscription successful!
               </div>
             </div>
           )}
