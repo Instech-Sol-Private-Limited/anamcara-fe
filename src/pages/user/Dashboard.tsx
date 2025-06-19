@@ -722,9 +722,17 @@ const UserDashboard = () => {
                                                         {new Date(item.created_at).toLocaleDateString()}
                                                     </p>
                                                 </div>
-                                                <div className="px-2 py-1 rounded text-xs font-mono font-bold border bg-orange-500/20 text-orange-400 border-orange-500/30 ml-2 flex-shrink-0">
-                                                    +{item.points_earned} SP
-                                                </div>
+                                                <span
+  className={`px-2 py-1 rounded text-xs font-mono font-bold border ml-2 flex-shrink-0
+    ${item.points_earned >= 0
+      ? 'bg-green-500/20 text-green-400 border-green-500/30'
+      : 'bg-red-500/20 text-red-400 border-red-500/30'
+    }`
+  }
+>
+  {item.points_earned >= 0 ? '+' : ''}
+  {item.points_earned} SP
+</span>
                                             </div>
                                         </div>
                                     ))

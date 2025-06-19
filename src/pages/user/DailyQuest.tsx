@@ -10,7 +10,7 @@ interface DailyQuest {
   rewardType: 'soulpoints' | 'anamcoins' | 'xp';
   icon: any;
   isCompleted: boolean;
-  
+
   progress?: {
     current: number;
     target: number;
@@ -120,12 +120,12 @@ const DailyQuestsPage = () => {
         target: quest.reward
       }
     }));
-      // @ts-ignore
+    // @ts-ignore
     setQuests(selectedQuests);
   };
 
   const claimReward = (questId: number) => {
-    setQuests(quests.map(quest => 
+    setQuests(quests.map(quest =>
       quest.id === questId ? { ...quest, isCompleted: true } : quest
     ));
   };
@@ -250,33 +250,33 @@ const DailyQuestsPage = () => {
 
           <div className="bg-slate-900/90 border-2 border-slate-600/50 rounded-lg backdrop-blur-lg p-4 sm:p-6">
             <div className="grid grid-cols-7 gap-2 sm:gap-4 pb-4">
-  {[1, 2, 3, 4, 5, 6, 7].map((day) => (
-    <div 
-      key={day} 
-      className={`h-24 sm:h-32 rounded-lg border-2 ${day <= streak ? 'border-green-500/50 bg-green-500/10' : day === streak + 1 ? 'border-amber-500/50 bg-amber-500/10' : 'border-slate-600/50 bg-slate-800/50'} flex flex-col items-center justify-center p-2 sm:p-3 relative w-full`}
-    >
-      {day <= streak ? (
-        <FaCheckCircle className="text-green-400 text-xl absolute top-2 right-2" />
-      ) : null}
-      <div className={`text-base sm:text-2xl font-mono font-bold ${day <= streak ? 'text-green-400' : day === streak + 1 ? 'text-amber-400' : 'text-slate-400'}`}>
-        DAY {day}
-      </div>
-      <div className="mt-1 sm:mt-2 text-center">
-        <div className={`text-xs font-mono ${day <= streak ? 'text-green-300' : day === streak + 1 ? 'text-amber-300' : 'text-slate-400'}`}>
-          {day * 25} {day % 3 === 0 ? 'AC' : 'SP'}
-        </div>
-        {day === 7 && (
-          <div className="text-xs font-mono text-amber-300 mt-1">BONUS</div>
-        )}
-      </div>
-      {day === streak + 1 && !claimedToday && (
-        <button className="mt-1 sm:mt-2 px-2 py-1 text-xs font-mono rounded bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600/30 transition-colors">
-          CLAIM
-        </button>
-      )}
-    </div>
-  ))}
-</div>
+              {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+                <div
+                  key={day}
+                  className={`h-24 sm:h-32 rounded-lg border-2 ${day <= streak ? 'border-green-500/50 bg-green-500/10' : day === streak + 1 ? 'border-red-500/50 bg-red-500/10' : 'border-slate-600/50 bg-slate-800/50'} flex flex-col items-center justify-center p-2 sm:p-3 relative w-full`}
+                >
+                  {day <= streak ? (
+                    <FaCheckCircle className="text-green-400 text-xl absolute top-2 right-2" />
+                  ) : null}
+                  <div className={`text-base sm:text-2xl font-mono font-bold ${day <= streak ? 'text-green-400' : day === streak + 1 ? 'text-red-400' : 'text-slate-400'}`}>
+                    DAY {day}
+                  </div>
+                  <div className="mt-1 sm:mt-2 text-center">
+                    <div className={`text-xs font-mono ${day <= streak ? 'text-green-300' : day === streak + 1 ? 'text-red-300' : 'text-slate-400'}`}>
+                      {day * 25} {day % 3 === 0 ? 'AC' : 'SP'}
+                    </div>
+                    {day === 7 && (
+                      <div className="text-xs font-mono text-amber-300 mt-1">BONUS</div>
+                    )}
+                  </div>
+                  {day === streak + 1 && !claimedToday && (
+                    <button className="mt-1 sm:mt-2 px-2 py-1 text-xs font-mono rounded bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600/30 transition-colors">
+                      CLAIM
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
             <div className="mt-4 text-slate-400 text-xs font-mono">
               💡 Log in daily to maintain your streak and earn bigger rewards!
             </div>
@@ -286,74 +286,74 @@ const DailyQuestsPage = () => {
         {/* Quest Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {quests.map((quest) => (
-  <div 
-    key={quest.id} 
-    className={`relative group bg-slate-900/90 border-2 ${quest.isCompleted ? 'border-green-500/50' : 'border-amber-500/50'} rounded-lg backdrop-blur-lg transition-all duration-300 hover:shadow-xl ${quest.isCompleted ? 'hover:shadow-green-500/10' : 'hover:shadow-amber-500/10'} p-4`}
-  >
-    {/* Completed overlay */}
-    {quest.isCompleted && (
-      <div className="absolute top-2 right-2 z-10">
-        <FaCheckCircle className="text-green-400 text-xl" />
-      </div>
-    )}
+            <div
+              key={quest.id}
+              className={`relative group bg-slate-900/90 border-2 ${quest.isCompleted ? 'border-green-500/50' : 'border-red-500/50'} rounded-lg backdrop-blur-lg transition-all duration-300 hover:shadow-xl ${quest.isCompleted ? 'hover:shadow-green-500/10' : 'hover:shadow-red-500/10'} p-4`}
+            >
+              {/* Completed overlay */}
+              {quest.isCompleted && (
+                <div className="absolute top-2 right-2 z-10">
+                  <FaCheckCircle className="text-green-400 text-xl" />
+                </div>
+              )}
 
-    <div className="relative z-0">
-      {/* Quest header */}
-      <div className="flex items-start space-x-3 mb-3">
-        <div className={`w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center ${quest.isCompleted ? 'bg-green-500/20 border-green-500/30' : 'bg-amber-500/20 border-amber-500/30'} border`}>
-          <quest.icon className={`text-lg ${quest.isCompleted ? 'text-green-400' : 'text-amber-400'}`} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className={`text-sm sm:text-base font-bold font-mono truncate ${quest.isCompleted ? 'text-green-400' : 'text-white'}`}>
-            {quest.title}
-          </h3>
-          <p className="text-slate-400 text-xs font-mono">{quest.description}</p>
-        </div>
-      </div>
+              <div className="relative z-0">
+                {/* Quest header */}
+                <div className="flex items-start space-x-3 mb-3">
+                  <div className={`w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center ${quest.isCompleted ? 'bg-green-500/20 border-green-500/30' : 'bg-red-500/20 border-red-500/30'} border`}>
+                    <quest.icon className={`text-lg ${quest.isCompleted ? 'text-green-400' : 'text-red-400'}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className={`text-sm sm:text-base font-bold font-mono truncate ${quest.isCompleted ? 'text-green-400' : 'text-white'}`}>
+                      {quest.title}
+                    </h3>
+                    <p className="text-slate-400 text-xs font-mono">{quest.description}</p>
+                  </div>
+                </div>
 
-      {/* Progress bar */}
-      {quest.progress && !quest.isCompleted && (
-        <div className="mb-3">
-          <div className="flex justify-between text-xs font-mono mb-1">
-            <span className="text-amber-300">PROGRESS</span>
-            <span className="text-slate-400">{Math.min(quest.progress.current, quest.progress.target)}/{quest.progress.target}</span>
-          </div>
-          <div className="w-full bg-slate-800 rounded-full h-2">
-            <div 
-              className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full" 
-              style={{ width: `${Math.min(100, (quest.progress.current / quest.progress.target) * 100)}%` }}
-            ></div>
-          </div>
-        </div>
-      )}
+                {/* Progress bar */}
+                {quest.progress && !quest.isCompleted && (
+                  <div className="mb-3">
+                    <div className="flex justify-between text-xs font-mono mb-1">
+                      <span className="text-red-300">PROGRESS</span>
+                      <span className="text-slate-400">{Math.min(quest.progress.current, quest.progress.target)}/{quest.progress.target}</span>
+                    </div>
+                    <div className="w-full bg-slate-800 rounded-full h-2">
+                      <div
+                        className="bg-gradient-to-r from-red-500 to-orange-500 h-2 rounded-full"
+                        style={{ width: `${Math.min(100, (quest.progress.current / quest.progress.target) * 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
 
-      {/* Reward section */}
-      <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-700/50">
-        <div className="flex items-center space-x-2">
-          <div className={`px-2 py-1 rounded text-xs font-mono font-bold ${quest.isCompleted ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-amber-500/20 text-amber-400 border-amber-500/30'} border`}>
-            +{quest.reward} {quest.rewardType === 'soulpoints' ? 'SP' : quest.rewardType === 'anamcoins' ? 'AC' : 'XP'}
-          </div>
-        </div>
-        <button
-          onClick={() => !quest.isCompleted && claimReward(quest.id)}
-          disabled={quest.isCompleted}
-          className={`px-3 py-1 rounded text-xs font-mono transition-all ${quest.isCompleted 
-            ? 'bg-green-500/20 text-green-400 border-green-500/30 cursor-default' 
-            : 'bg-amber-600/20 text-amber-300 border-amber-500/30 hover:bg-amber-600/30'}`}
-        >
-          {quest.isCompleted ? 'CLAIMED' : 'CLAIM'}
-        </button>
-      </div>
-    </div>
+                {/* Reward section */}
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-700/50">
+                  <div className="flex items-center space-x-2">
+                    <div className={`px-2 py-1 rounded text-xs font-mono font-bold ${quest.isCompleted ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'} border`}>
+                      +{quest.reward} {quest.rewardType === 'soulpoints' ? 'SP' : quest.rewardType === 'anamcoins' ? 'AC' : 'XP'}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => !quest.isCompleted && claimReward(quest.id)}
+                    disabled={quest.isCompleted}
+                    className={`px-3 py-1 rounded text-xs font-mono transition-all ${quest.isCompleted
+                      ? 'bg-green-500/20 text-green-400 border-green-500/30 cursor-default'
+                      : 'bg-red-600/20 text-red-300 border-red-500/30 hover:bg-red-600/30'}`}
+                  >
+                    {quest.isCompleted ? 'CLAIMED' : 'CLAIM'}
+                  </button>
+                </div>
+              </div>
 
-    {/* Cyberpunk corners */}
-    <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-amber-400/50"></div>
-    <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-amber-400/50"></div>
-  </div>
-))}
+              {/* Cyberpunk corners */}
+              <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-red-400/50"></div>
+              <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-red-400/50"></div>
+            </div>
+          ))}
         </div>
 
-        
+
       </div>
     </div>
   );

@@ -98,7 +98,7 @@ const LeadershipBoard = () => {
 
     const getFilterOptions = (): string[] => {
         if (activeTab === 'weekly-earners') {
-            return ['all', 'anamcoins', 'soulpoints'];
+            return ['Worldwide', 'anamcoins', 'soulpoints'];
         }
         return (filterOptions as any)[activeTab] || ['worldwide'];
     };
@@ -390,7 +390,7 @@ const LeadershipBoard = () => {
                             ref={(el) => (tabRefs.current[tab.id] = el)}
                             onClick={() => {
                                 setActiveTab(tab.id);
-                                setSelectedFilter(tab.id === 'weekly-earners' ? 'all' : 'worldwide');
+                                setSelectedFilter(tab.id === 'weekly-earners' ? 'Worldwide' : 'worldwide');
                             }}
                             className={`relative flex items-center justify-center gap-2 md:px-6 px-3 md:py-4 py-2 rounded-lg transition-all duration-300 whitespace-nowrap skew-x-[27deg] ${activeTab === tab.id
                                 ? 'text-white font-semibold'
@@ -478,7 +478,7 @@ const LeadershipBoard = () => {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            {selectedFilter === 'all' && (
+                                            {selectedFilter === 'Worldwide' && (
                                                 <>
                                                     <p className="text-lg font-bold text-blue-400">{user.weeklySoulpoints.toLocaleString()} SP</p>
                                                     <p className="text-lg font-bold text-yellow-400">{user.weeklyAnamcoins.toLocaleString()} AC</p>
@@ -492,7 +492,7 @@ const LeadershipBoard = () => {
                                             )}
                                         </div>
                                     </div>
-                                    {selectedFilter !== 'all' && (
+                                    {selectedFilter !== 'Worldwide' && (
                                         <div className="mt-2 text-right">
                                             <span className="text-xs text-slate-500">
                                                 Showing: {selectedFilter === 'anamcoins' ? 'AnamCoins Only' : 'SoulPoints Only'}

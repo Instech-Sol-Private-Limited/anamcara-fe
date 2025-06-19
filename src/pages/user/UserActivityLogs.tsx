@@ -113,7 +113,7 @@ const UserActivityLogs = () => {
                         <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/40 hover:from-orange-500/30 hover:to-red-500/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/20">
                             <FaFire className="text-orange-400 text-sm animate-pulse" />
                             <span className="text-orange-300 font-mono font-bold text-sm">
-                                +{points} SP
+                                {points >= 0 ? '+' : ''}{points} SP
                             </span>
                         </div>
                     ) : (
