@@ -6,18 +6,51 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthProvider';
 import PrimaryButton from '../addons/PrimaryButton';
 import { useNavigate } from 'react-router-dom';
-import { useUserAura } from "../../context/UserAuraContext";
+import { useUserAura } from '../../context/UserAuraContext';
 import UserAvatar from './UserAvatar';
+import { auraMap } from '../../constants/index';
+import { getUserBadges, UserBadge } from '../../utils/badge';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const { auraClass } = useUserAura();
+  const [badges, setBadges] = useState<UserBadge[]>([]);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
   const { accessToken, loading, logout, userData } = useAuth();
+  const { auraClass, setAuraClass } = useUserAura();
+const SOUL_TITLE_NAMES = [
+  'Wanderer', 'Light Seeker', 'Insight Whisperer', 'Pathfinder',
+  'Soul Contributor', 'Harmonic Voice', 'Wisdom Weaver',
+  'Echo Guide', 'Anamfriend', 'Elder Soul'
+];
+
+const getSoulTitleAura = (badges: UserBadge[]) => {
+  const soulTitleBadge = badges.find(badge => SOUL_TITLE_NAMES.includes(badge.name));
+  if (!soulTitleBadge) return '';
+  return auraMap[soulTitleBadge.color] || '';
+};
+
+useEffect(() => {
+  const fetchBadges = async () => {
+    if (userData?.id) {
+      const result = await getUserBadges(userData.id);
+      if (result.success) {
+        setBadges(result.data.badges);
+      }
+    }
+  };
+  fetchBadges();
+}, [userData]);
+
+useEffect(() => {
+  const aura = getSoulTitleAura(badges);
+  console.log('Badges:', badges); // See what badges are present
+  console.log('Computed aura:', aura); // See what auraClass is being set
+  setAuraClass(aura);
+}, [badges]);
 
   const placeholders = [
     "Search Threads...",
@@ -130,27 +163,27 @@ const Navbar: React.FC = () => {
 
                   <div className='px-3 text-left md:block hidden'>
                     <p className="md:text-xs font-medium text-text-secondary capitalize">{userData?.first_name}{userData?.last_name ? ` ${userData.last_name}` : ''}</p>
-                    <p className="md:text-[10px] text-black/80 dark:text-white/80 truncate">{userData?.email}</p>
+                    <p className="md:text-[10px] text-white/80 truncate">{userData?.email}</p>
                   </div>
                 </button>
               )
           )}
 
           {isUserMenuOpen && (
-            <div className="origin-top-right absolute right-0 mt-2 w-fit z-40 rounded-md bg-main shadow-[0px_0px_10px] shadow-pre/40 animate-scaleIn">
+            <div className="origin-top-right absolute right-0 mt-2 w-fit z-40 rounded-md bg-[#181f2a] shadow-[0px_0px_10px] shadow-pre/40 animate-scaleIn">
               <div className="py-1" role="menu">
                 <div className="px-4 md:py-3 py-2 border-b border-primary-two  md:hidden">
                   <p className="md:text-sm text-xs font-medium text-text-secondary capitalize">{userData?.first_name}{userData?.last_name ? ` ${userData.last_name}` : ''}</p>
-                  <p className="md:text-xs text-[10px] text-black/80 dark:text-white/80 truncate">{userData?.email}</p>
+                  <p className="md:text-xs text-[10px] text-white truncate">{userData?.email}</p>
                 </div>
 
                 <button
                   onClick={() => {
                     setIsUserMenuOpen(false);
                     logout();
-                  }} className="flex w-full items-center px-4 py-2 md:text-sm sm:text-xs text-[10px] text-black/60 dark:text-white/60 hover:bg-pre/20 hover:text-black hover:dark:text-white transition-all duration-300 cursor-pointer"
+                  }} className="flex w-full items-center px-4 py-2 md:text-sm sm:text-xs text-[10px] text-white/60 hover:bg-pre/20  transition-all duration-300 cursor-pointer"
                 >
-                  <FiLogOut className="mr-3 lg:text-xl md:text-lg text-[16px] text-black/80 dark:text-white/80" />
+                  <FiLogOut className="mr-3 lg:text-xl md:text-lg text-[16px] text-white/80" />
                   Sign out
                 </button>
               </div>

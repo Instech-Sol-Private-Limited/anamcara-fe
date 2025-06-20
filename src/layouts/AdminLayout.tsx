@@ -4,6 +4,7 @@ import Sidebar from "../components/core/Sidebar";
 import DashboardNavbar from "../components/core/DashbaordNavbar";
 import { useAuth } from "../context/AuthProvider";
 import { LoadingOutlined } from "@ant-design/icons";
+import { UserAuraProvider } from "../context/UserAuraContext";
 
 const AdminLayout = () => {
     const location = useLocation();
@@ -40,6 +41,7 @@ const AdminLayout = () => {
     if (!accessToken) return customLoader;
 
     return (
+        <UserAuraProvider>
         <div className="w-full min-h-screen bg-black flex flex-col">
             <div className="fixed top-0 left-0 right-0 z-40">
                 <DashboardNavbar />
@@ -55,6 +57,7 @@ const AdminLayout = () => {
                 </div>
             </div>
         </div>
+        </UserAuraProvider>
     );
 };
 

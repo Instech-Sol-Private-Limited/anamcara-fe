@@ -10,7 +10,9 @@ import {
 } from '@ant-design/icons';
 import supabase from '../../config/supabase'; // Ensure this path is correct
 import { useEffect, useState } from 'react';
-import usersImg from '/public/icons/admin/4.jpeg'; // Kept if still preferred for 'contact'
+import usersImg from '/public/icons/admin/4.jpeg';
+import { getUserBadges, UserBadge } from '../../utils/badge';
+import { auraMap } from '../../constants';
 
 interface UserType {
     key: string;
@@ -33,7 +35,19 @@ const RolesManagement = () => {
     const [totalUsers, setTotalUsers] = useState(0);
     const [loading, setLoading] = useState(false);
     const [actionLoading, setActionLoading] = useState<{ [key: string]: boolean }>({});
+    const [userBadges, setUserBadges] = useState<{ [userId: string]: UserBadge[] }>({});
 
+    const SOUL_TITLE_NAMES = [
+        'Wanderer', 'Light Seeker', 'Insight Whisperer', 'Pathfinder',
+        'Soul Contributor', 'Harmonic Voice', 'Wisdom Weaver',
+        'Echo Guide', 'Anamfriend', 'Elder Soul'
+    ];
+
+    const getUserAuraClass = (badges: UserBadge[] = []) => {
+        const soulTitleBadge = badges.find(badge => SOUL_TITLE_NAMES.includes(badge.name));
+        if (!soulTitleBadge) return '';
+        return auraMap[soulTitleBadge.color] || '';
+    };
 
     const fetchUsers = async (page = currentPage, size = pageSize) => {
         setLoading(true);
@@ -180,6 +194,23 @@ const RolesManagement = () => {
         setCurrentPage(page);
         setPageSize(size);
     };
+
+
+    useEffect(() => {
+        const fetchAllBadges = async () => {
+            for (const user of users) {
+                if (!userBadges[user.id]) {
+                    const result = await getUserBadges(user.id);
+                    if (result.success) {
+                        setUserBadges(prev => ({ ...prev, [user.id]: result.data.badges }));
+                    }
+                }
+            }
+        };
+        if (users.length > 0) fetchAllBadges();
+        // eslint-disable-next-line
+    }, [users]);
+
 
     const RoleTag: React.FC<{ role: string }> = ({ role }) => {
         let bgColor = 'bg-gray-500/20';
@@ -339,54 +370,28 @@ const RolesManagement = () => {
                                     {/* User Info Section */}
                                     <div className="flex flex-col items-center text-center pt-2 sm:pt-3 md:pt-4">
                                         {/* Avatar with cyberpunk frame */}
-                                        <div className="relative mb-3 sm:mb-4 md:mb-6">
-                                            <div
-                                                className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-500 opacity-80"
-                                                style={{
-                                                    clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)',
-                                                    width: '50px',
-                                                    height: '50px',
-                                                    marginLeft: '-3px',
-                                                    marginTop: '-3px',
-                                                }}
-                                            />
-                                            <div
-                                                className="relative bg-slate-900"
-                                                style={{
-                                                    clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)',
-                                                    width: '44px',
-                                                    height: '44px',
-                                                    padding: '2px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    overflow: 'hidden',
-                                                }}
-                                            >
-                                                {user.avatar_url ? (
-                                                    <img
-                                                        src={user.avatar_url}
-                                                        alt="avatar"
-                                                        style={{
-                                                            width: '100%',
-                                                            height: '100%',
-                                                            objectFit: 'cover',
-                                                            clipPath: 'polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%)',
-                                                        }}
-                                                    />
-                                                ) : (
-                                                    <Avatar
-                                                        icon={<UserOutlined />}
-                                                        style={{
-                                                            width: '100%',
-                                                            height: '100%',
-                                                            fontSize: 24,
-                                                            background: 'transparent',
-                                                        }}
-                                                    />
-                                                )}
-                                            </div>
-                                        </div>
+      <div className="relative mb-3 sm:mb-4 md:mb-6 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto">
+  {/* Circular avatar with dynamic aura glow */}
+  <div className={`w-full h-full rounded-full p-0.5 shadow-lg ${getUserAuraClass(userBadges[user.id]) || 'bg-gradient-to-r from-cyan-400 to-cyan-500 shadow-cyan-400/50'}`}>
+    <div className="w-full h-full rounded-full overflow-hidden bg-slate-800 flex items-center justify-center">
+      {user.avatar_url ? (
+        <img
+          src={user.avatar_url}
+          alt="avatar"
+          className="w-full h-full object-cover rounded-full"
+        />
+      ) : (
+        <div className="w-full h-full rounded-full bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center">
+          <span className="text-white font-bold text-lg sm:text-xl md:text-2xl">
+            {user.first_name?.charAt(0)?.toUpperCase() || 'U'}
+          </span>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
+
+                                        {/* Badges Section */}
 
                                         {/* User Name */}
                                         <h3

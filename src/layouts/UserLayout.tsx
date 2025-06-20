@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import UserSidebar from "../components/core/UserSidebar";
 import DashboardNavbar from "../components/core/DashbaordNavbar";
 import { useAuth } from "../context/AuthProvider";
-
+import { UserAuraProvider } from "../context/UserAuraContext";
 import { LoadingOutlined } from "@ant-design/icons";
 
 const UserLayout = () => {
@@ -41,6 +41,7 @@ const UserLayout = () => {
     if (!accessToken) return customLoader;
 
     return (
+        <UserAuraProvider>
         <div className="w-full min-h-screen bg-black flex flex-col">
             <div className="fixed top-0 left-0 right-0 z-40">
                 <DashboardNavbar />
@@ -56,6 +57,7 @@ const UserLayout = () => {
                 </div>
             </div>
         </div>
+        </UserAuraProvider>
     );
 };
 
