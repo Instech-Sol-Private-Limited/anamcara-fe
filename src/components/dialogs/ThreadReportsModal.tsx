@@ -5,6 +5,7 @@ import { message, Avatar } from 'antd';
 import supabase from '../../config/supabase';
 import { formatDate } from "../../pages/admin";
 import { LoadingOutlined } from '@ant-design/icons';
+import { getReportsByPostId } from "../../utils/reports"; // <-- import your utility
 
 interface ThreadReportType {
     key: string;
@@ -19,19 +20,27 @@ interface ThreadReportType {
 interface ModalProps {
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
-    selectedThread: string;
+    type: "thread" | "post"; // <-- add this
+    selectedThread?: string;
+    selectedPost?: string;
 }
 
-const ThreadReportsModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, selectedThread }) => {
+const ThreadReportsModal: React.FC<ModalProps> = ({
+    isOpen,
+    setIsOpen,
+    type,
+    selectedThread,
+    selectedPost
+}) => {
     const [reports, setReports] = useState<ThreadReportType[]>([]);
     const [loading, setLoading] = useState(false);
 
+    // Fetch thread reports (existing logic)
     const fetchThreadReports = async () => {
         if (!selectedThread) {
             setReports([]);
             return;
         }
-
         setLoading(true);
         try {
             const { data, error } = await supabase
@@ -47,9 +56,7 @@ const ThreadReportsModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, selectedT
                 .eq('thread_id', selectedThread)
                 .order('created_at', { ascending: true });
 
-            if (error) {
-                throw error;
-            }
+            if (error) throw error;
             if (data) {
                 const formattedReports: ThreadReportType[] = data.map((report: any) => ({
                     key: report.id,
@@ -63,7 +70,6 @@ const ThreadReportsModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, selectedT
                 setReports(formattedReports);
             }
         } catch (error: any) {
-            console.error('Error fetching thread reports:', error.message);
             message.error(`Failed to load reports: ${error.message}`);
             setReports([]);
         } finally {
@@ -71,13 +77,47 @@ const ThreadReportsModal: React.FC<ModalProps> = ({ isOpen, setIsOpen, selectedT
         }
     };
 
-    useEffect(() => {
-        if (isOpen && selectedThread) {
-            fetchThreadReports();
-        } else if (!isOpen) {
+    // Fetch post reports (new logic)
+    const fetchPostReports = async () => {
+        if (!selectedPost) {
             setReports([]);
+            return;
         }
-    }, [isOpen, selectedThread]);
+        setLoading(true);
+        try {
+            const res = await getReportsByPostId(selectedPost);
+            if (!res.success) throw new Error(res.message);
+            const data = res.data || [];
+            const formattedReports: ThreadReportType[] = data.map((report: any) => ({
+                key: report.id,
+                id: report.id,
+                reason: report.reason,
+                description: report.description,
+                reporter_username: report.reporter_name || 'Unknown User',
+                reporter_avatar_url: report.reporter_avatar_url || '',
+                created_at: formatDate(report.created_at),
+            }));
+            setReports(formattedReports);
+        } catch (error: any) {
+            message.error(`Failed to load post reports: ${error.message}`);
+            setReports([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!isOpen) {
+            setReports([]);
+            return;
+        }
+        if (type === "thread" && selectedThread) {
+            fetchThreadReports();
+        } else if (type === "post" && selectedPost) {
+            fetchPostReports();
+        }
+    // eslint-disable-next-line
+    }, [isOpen, selectedThread, selectedPost, type]);
 
     return (
         <ModalWrapper

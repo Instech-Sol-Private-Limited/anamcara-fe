@@ -372,7 +372,7 @@ const LeadershipBoard = () => {
                 <div className="group flex items-center gap-1 mb-6 lg:w-[calc(100%-60px)] md:w-[calc(100%-40px)] w-[calc(100%-30px)] overflow-x-auto mx-auto mt-3 bg-white/10 shadow-[0px_0px_16px] shadow-black/10 skew-x-[-27deg] p-1 rounded-xl relative scrollbar-hide group-hover:scrollbar-default">
                     {/* Sliding Background */}
                     <div
-                        className={`absolute top-1 bottom-1 bg-gradient-to-r ${tabs.find((t) => t.id === activeTab)?.color
+                        className={`absolute top-1 bottom-1 bg-gradient-to-r ${tabs.find((t:any) => t.id === activeTab)?.color
                             } rounded-lg border transition-all duration-300`}
                         style={{
                             ...bgStyle,

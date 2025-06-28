@@ -55,4 +55,22 @@ const getReportedThreads = async (): Promise<ApiResponse<any>> => {
     }
 }
 
-export { createThreadReport, deleteSpamThread, getReportedThreads };
+
+
+const getReportsByPostId = async (post_id: string): Promise<ApiResponse<any>> => {
+    try {
+        const response = await apiClient.get(`/reports/get-reports-by-post-id/${post_id}`);
+        return {
+            success: true,
+            data: response.data
+        };
+    } catch (error) {
+        return {
+            success: false,
+            // @ts-ignore
+            message: error.response?.data.message || error.response?.data.error || 'An unexpected error occurred'
+        };
+    }
+};
+
+export { createThreadReport, deleteSpamThread, getReportedThreads, getReportsByPostId };

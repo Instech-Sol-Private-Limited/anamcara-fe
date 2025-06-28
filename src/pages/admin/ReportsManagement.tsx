@@ -6,7 +6,7 @@ import {
 
 import { FaEye, FaShieldAlt, FaExclamationTriangle } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
-import { getReportedThreads } from '../../utils/reports';
+import { getReportedThreads, getReportsByPostId } from '../../utils/reports';
 import supabase from '../../config/supabase';
 import ThreadReportsModal from '../../components/dialogs/ThreadReportsModal';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -15,44 +15,58 @@ import { LoadingOutlined } from '@ant-design/icons';
 interface ThreadReportType {
     key: number;
     id: number;
-    thread_id: string;
-    thread_title: string;
+    item_id: string; // thread_id or post_id
+    item_title: string;
     total_reports: number;
     status: 'active' | 'inactive';
+    type: 'thread' | 'post'; // New field to distinguish type
 }
 
 const ReportsManagement = () => {
     const [viewOpen, setViewOpen] = useState<boolean>(false);
-    const [selectedThread, setSelectedThread] = useState<string>("");
+const [modalType, setModalType] = useState<'thread' | 'post'>('thread');
+const [selectedThread, setSelectedThread] = useState<string>(''); // for threads
+const [selectedPost, setSelectedPost] = useState<string>('');     // for posts
     const [threads, setThreads] = useState<ThreadReportType[]>([]);
     const [loading, setLoading] = useState(false);
+    const [reports, setReports] = useState<ThreadReportType[]>([]);
+    const [reportFilter, setReportFilter] = useState<'all' | 'threads' | 'posts'>('all');
 
-    const toggleThreadStatus = async (record: ThreadReportType) => {
+    const toggleItemStatus = async (record: ThreadReportType) => {
         try {
             setLoading(true);
-            // Toggle based on current status
             const newStatus = record.status === 'active' ? false : true;
-            const { error } = await supabase.from('threads')
+            const tableName = record.type === 'thread' ? 'threads' : 'posts';
+
+            const { error } = await supabase.from(tableName)
                 .update({ is_active: newStatus })
-                .eq('id', record.thread_id);
+                .eq('id', record.item_id);
 
             if (error) {
                 throw error;
             }
 
-            message.success(`Thread ${newStatus ? 'activated' : 'deactivated'} successfully`);
-            await fetchThreadReports();
+            message.success(`${record.type} ${newStatus ? 'activated' : 'deactivated'} successfully`);
+            await fetchAllReports();
         } catch (error) {
-            message.error(`Failed to ${record.status === 'active' ? 'deactivate' : 'activate'} thread`);
+            message.error(`Failed to ${record.status === 'active' ? 'deactivate' : 'activate'} ${record.type}`);
         } finally {
             setLoading(false);
         }
     };
-
     const handleViewDetails = (record: ThreadReportType) => {
-        setSelectedThread(record.thread_id);
-        setViewOpen(true);
-    };
+  if (record.type === 'thread') {
+    setModalType('thread');
+    setSelectedThread(record.item_id);
+    setSelectedPost('');
+  } else {
+    setModalType('post');
+    setSelectedPost(record.item_id);
+    setSelectedThread('');
+  }
+  setViewOpen(true);
+};
+
 
     const columns = [
         {
@@ -68,19 +82,36 @@ const ReportsManagement = () => {
             ),
         },
         {
-            title: <span className="text-cyan-400 font-mono text-xs sm:text-sm">THREAD</span>,
-            dataIndex: 'thread_id',
-            key: 'thread_id',
+            title: <span className="text-cyan-400 font-mono text-xs sm:text-sm">TYPE</span>,
+            dataIndex: 'type',
+            key: 'type',
+            width: 80,
+            render: (type: 'thread' | 'post') => (
+                <div className={`px-2 py-1 rounded text-xs font-mono font-bold ${type === 'thread'
+                        ? 'bg-blue-500/20 text-blue-300 border border-blue-400/30'
+                        : 'bg-purple-500/20 text-purple-300 border border-purple-400/30'
+                    }`}>
+                    {type.toUpperCase()}
+                </div>
+            ),
+        },
+        {
+            title: <span className="text-cyan-400 font-mono text-xs sm:text-sm">ITEM ID</span>,
+            dataIndex: 'item_id',
+            key: 'item_id',
             render: (text: string) => (
                 <div className="bg-gray-800/50 px-1 sm:px-3 py-1 rounded border border-cyan-500/30 hover:border-cyan-400/60 transition-all duration-300">
-                    <span className="text-green-400 font-mono text-xs break-all">{text.slice(0, 8)}...</span>
+                    <span className="text-green-400 font-mono text-xs break-all">
+  {text ? text.slice(0, 8) : ''}
+  ...
+</span>
                 </div>
             ),
         },
         {
             title: <span className="text-cyan-400 font-mono text-xs sm:text-sm">TITLE</span>,
-            dataIndex: 'thread_title',
-            key: 'thread_title',
+            dataIndex: 'item_title',
+            key: 'item_title',
             render: (text: string) => (
                 <div className="flex items-center space-x-1 sm:space-x-2">
                     <FaShieldAlt className="text-purple-400 text-xs hidden sm:block" />
@@ -99,11 +130,11 @@ const ReportsManagement = () => {
             render: (text: number) => (
                 <div className="flex items-center justify-center">
                     <div className={`
-                        px-2 py-1 rounded-full border-2 font-mono text-xs font-bold
-                        ${text >= 20 ? 'bg-red-500/20 border-red-400 text-red-300' :
+                    px-2 py-1 rounded-full border-2 font-mono text-xs font-bold
+                    ${text >= 20 ? 'bg-red-500/20 border-red-400 text-red-300' :
                             text >= 10 ? 'bg-yellow-500/20 border-yellow-400 text-yellow-300' :
                                 'bg-green-500/20 border-green-400 text-green-300'}
-                    `}>
+                `}>
                         {text}
                     </div>
                     {text >= 15 && <FaExclamationTriangle className="text-red-400 ml-1 animate-pulse text-xs" />}
@@ -122,16 +153,16 @@ const ReportsManagement = () => {
                         <Switch
                             size="small"
                             checked={status === 'active'}
-                            onChange={() => toggleThreadStatus(record)}
+                            onChange={() => toggleItemStatus(record)}
                             className={`
-                                cyber-switch transition-all duration-300
-                                ${status === 'active' ? 'bg-green-500' : 'bg-gray-600'}
-                            `}
+                            cyber-switch transition-all duration-300
+                            ${status === 'active' ? 'bg-green-500' : 'bg-gray-600'}
+                        `}
                         />
                         <div className={`
-                            absolute -inset-1 rounded-full blur-sm opacity-50 pointer-events-none
-                            ${status === 'active' ? 'bg-green-400' : 'bg-gray-500'}
-                        `}></div>
+                        absolute -inset-1 rounded-full blur-sm opacity-50 pointer-events-none
+                        ${status === 'active' ? 'bg-green-400' : 'bg-gray-500'}
+                    `}></div>
                     </div>
                 </div>
             ),
@@ -174,26 +205,99 @@ const ReportsManagement = () => {
         },
     ];
 
-    const fetchThreadReports = async () => {
+    const fetchAllReports = async () => {
         setLoading(true);
-        const response = await getReportedThreads();
-        if (response.success) {
-            const updatedData = response.data.map((item: any, index: number) => ({
-                key: index,
-                id: index,
-                thread_id: item.thread_id,
-                thread_title: item.title,
-                total_reports: item.total_reports,
-                status: item.is_active ? 'active' : 'inactive',
-            }));
-            setThreads(updatedData);
+        try {
+            const [threadsResponse, postsResponse] = await Promise.all([
+                getReportedThreads(),
+                getReportsByPostId('all') // Assuming you modify the API to accept 'all' to get all post reports
+            ]);
+
+            const allReports: ThreadReportType[] = [];
+
+            // Process thread reports
+            if (threadsResponse.success && threadsResponse.data) {
+                const threadReports = threadsResponse.data.map((item: any, index: number) => ({
+                    key: `thread-${index}`,
+                    id: index,
+                    item_id: item.thread_id,
+                    item_title: item.title,
+                    total_reports: item.total_reports,
+                    status: item.is_active ? 'active' : 'inactive',
+                    type: 'thread' as const,
+                }));
+                allReports.push(...threadReports);
+            }
+
+            // Process post reports (you'll need to modify your API to return similar structure)
+            if (postsResponse.success && postsResponse.data) {
+                const postReports = postsResponse.data.map((item: any, index: number) => ({
+                    key: `post-${index}`,
+                    id: allReports.length + index,
+                    item_id: item.post_id,
+                    item_title: item.title || item.content?.substring(0, 50) + '...',
+                    total_reports: item.total_reports,
+                    status: item.is_active ? 'active' : 'inactive',
+                    type: 'post' as const,
+                }));
+                allReports.push(...postReports);
+            }
+
+            setReports(allReports);
+        } catch (error) {
+            message.error('Failed to fetch reports');
+        } finally {
             setLoading(false);
-        };
-    }
+        }
+    };
+
+    const getFilteredReports = () => {
+        switch (reportFilter) {
+            case 'threads':
+                return reports.filter(report => report.type === 'thread');
+            case 'posts':
+                return reports.filter(report => report.type === 'post');
+            default:
+                return reports;
+        }
+    };
+
+    const FilterButtons = () => (
+        <div className="flex flex-wrap gap-2 mb-4">
+            <Button
+                type={reportFilter === 'all' ? 'primary' : 'default'}
+                onClick={() => setReportFilter('all')}
+                className={`cyber-filter-btn ${reportFilter === 'all' ? 'active' : ''}`}
+                size="small"
+            >
+                All Reports ({reports.length})
+            </Button>
+            <Button
+                type={reportFilter === 'threads' ? 'primary' : 'default'}
+                onClick={() => setReportFilter('threads')}
+                className={`cyber-filter-btn ${reportFilter === 'threads' ? 'active' : ''}`}
+                size="small"
+            >
+                Threads ({reports.filter(r => r.type === 'thread').length})
+            </Button>
+            <Button
+                type={reportFilter === 'posts' ? 'primary' : 'default'}
+                onClick={() => setReportFilter('posts')}
+                className={`cyber-filter-btn ${reportFilter === 'posts' ? 'active' : ''}`}
+                size="small"
+            >
+                Posts ({reports.filter(r => r.type === 'post').length})
+            </Button>
+        </div>
+    );
 
     useEffect(() => {
-        fetchThreadReports();
+        fetchAllReports();
     }, []);
+
+const totalReports = reports.length;
+const highRiskReports = reports.filter(r => r.total_reports >= 15).length;
+const activeReports = reports.filter(r => r.status === 'active').length;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-2 sm:p-4 lg:p-6 relative overflow-hidden">
@@ -268,15 +372,13 @@ const ReportsManagement = () => {
 
                     {/* Stats Bar */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
-                        {/* Total Threads Card */}
-                        <div className="relative">
-                            <div
-                                className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-cyan-500/30 p-3 sm:p-4 lg:p-6 relative overflow-hidden"
-                                style={{
-                                    clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
-                                    boxShadow: 'inset 0 0 20px rgba(0, 255, 255, 0.05)'
-                                }}
-                            >
+    {/* Total Reports Card */}
+    <div className="relative">
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-cyan-500/30 p-3 sm:p-4 lg:p-6 relative overflow-hidden"
+            style={{
+                clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
+                boxShadow: 'inset 0 0 20px rgba(0, 255, 255, 0.05)'
+            }}>
                                 {/* Glowing Border Effect */}
                                 <div
                                     className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-blue-500/20 -z-10"
@@ -287,25 +389,21 @@ const ReportsManagement = () => {
                                 />
 
                                 {/* Status Label */}
-                                <div
-                                    className="absolute top-1 sm:top-2 right-1 sm:right-2 px-1 sm:px-2 py-0.5 sm:py-1 text-xs font-bold font-mono tracking-wider text-black"
-                                    style={{
-                                        background: 'linear-gradient(45deg, #00FFFF, #00CCFF)',
-                                        clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
-                                        boxShadow: '0 0 10px rgba(0, 255, 255, 0.3)'
-                                    }}
-                                >
-                                    TOTAL
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-cyan-300 text-xs sm:text-sm mb-1 sm:mb-2 font-mono tracking-wider">THREADS</p>
-                                        <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white font-mono">{threads.length}</p>
-                                        <div className="text-xs text-cyan-500 font-mono mt-1">TRACKED</div>
-                                    </div>
-
-                                    <div 
+                               <div className="absolute top-1 sm:top-2 right-1 sm:right-2 px-1 sm:px-2 py-0.5 sm:py-1 text-xs font-bold font-mono tracking-wider text-black"
+                style={{
+                    background: 'linear-gradient(45deg, #00FFFF, #00CCFF)',
+                    clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
+                    boxShadow: '0 0 10px rgba(0, 255, 255, 0.3)'
+                }}>
+                TOTAL
+            </div>
+            <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                    <p className="text-cyan-300 text-xs sm:text-sm mb-1 sm:mb-2 font-mono tracking-wider">REPORTS</p>
+                    <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white font-mono">{totalReports}</p>
+                    <div className="text-xs text-cyan-500 font-mono mt-1">TRACKED</div>
+                </div>
+                                    <div
                                         className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center flex-shrink-0"
                                         style={{
                                             clipPath: 'polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%)'
@@ -329,13 +427,11 @@ const ReportsManagement = () => {
 
                         {/* High Risk Card */}
                         <div className="relative">
-                            <div
-                                className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-yellow-500/30 p-3 sm:p-4 lg:p-6 relative overflow-hidden"
-                                style={{
-                                    clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
-                                    boxShadow: 'inset 0 0 20px rgba(255, 193, 7, 0.05)'
-                                }}
-                            >
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-yellow-500/30 p-3 sm:p-4 lg:p-6 relative overflow-hidden"
+            style={{
+                clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
+                boxShadow: 'inset 0 0 20px rgba(255, 193, 7, 0.05)'
+            }}>
                                 {/* Glowing Border Effect */}
                                 <div
                                     className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-orange-500/20 -z-10"
@@ -366,7 +462,7 @@ const ReportsManagement = () => {
                                         <div className="text-xs text-yellow-500 font-mono mt-1">ALERT</div>
                                     </div>
 
-                                    <div 
+                                    <div
                                         className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center flex-shrink-0"
                                         style={{
                                             clipPath: 'polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%)'
@@ -427,7 +523,7 @@ const ReportsManagement = () => {
                                         <div className="text-xs text-green-500 font-mono mt-1">ONLINE</div>
                                     </div>
 
-                                    <div 
+                                    <div
                                         className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center flex-shrink-0"
                                         style={{
                                             clipPath: 'polygon(20% 0%, 100% 0%, 80% 100%, 0% 100%)'
@@ -461,7 +557,7 @@ const ReportsManagement = () => {
                         <div className="w-full h-0.5 bg-cyan-400 absolute bottom-0"></div>
                         <div className="w-0.5 h-full bg-cyan-400 absolute right-0"></div>
                     </div>
-                    
+
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-2">
                         <h2 className="text-sm sm:text-lg lg:text-xl font-bold font-mowaq text-white">
                             THREAT ANALYSIS MATRIX
@@ -488,7 +584,7 @@ const ReportsManagement = () => {
                         ) : (
                             <Table
                                 columns={columns}
-                                dataSource={threads}
+                                dataSource={getFilteredReports()}
                                 pagination={false}
                                 className="cyber-table"
                                 size="small"
@@ -520,13 +616,19 @@ const ReportsManagement = () => {
                                 }}
                             />
                         )}
-                        <ThreadReportsModal isOpen={viewOpen} setIsOpen={setViewOpen} selectedThread={selectedThread} />
+                        <ThreadReportsModal
+  isOpen={viewOpen}
+  setIsOpen={setViewOpen}
+  type={modalType}
+  selectedThread={modalType === 'thread' ? selectedThread : undefined}
+  selectedPost={modalType === 'post' ? selectedPost : undefined}
+/>
                     </div>
                 </div>
             </div>
 
             {/* Custom Styles */}
-          <style>{`
+            <style>{`
                 @keyframes grid-move {
                     0% { transform: translate(0, 0); }
                     100% { transform: translate(30px, 30px); }
@@ -728,12 +830,62 @@ const ReportsManagement = () => {
                         min-width: 80px !important;
                     }
                     
-                    .cyber-dropdown .ant-dropdown-menu-item {
+                   .cyber-dropdown .ant-dropdown-menu-item {
                         padding: 4px 8px !important;
                         font-size: 10px !important;
                     }
                 }
+
+/* === Filter Button Styles === */
+.cyber-filter-btn {
+    background: rgba(17, 24, 39, 0.8) !important;
+    border: 1px solid rgba(0, 255, 255, 0.3) !important;
+    color: #e5e7eb !important;
+    font-family: monospace !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    transition: all 0.3s ease !important;
+}
+.cyber-filter-btn:hover {
+    background: rgba(0, 255, 255, 0.1) !important;
+    border-color: rgba(0, 255, 255, 0.6) !important;
+    color: #00ffff !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3) !important;
+}
+.cyber-filter-btn.active,
+.cyber-filter-btn.ant-btn-primary {
+    background: rgba(0, 255, 255, 0.2) !important;
+    border-color: #00ffff !important;
+    color: #00ffff !important;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.4) !important;
+}
+
+/* === Mobile Styles for Table Columns === */
+@media (max-width: 400px) {
+    .cyber-table .ant-table-tbody > tr > td:nth-child(1):before {
+        content: "ID: ";
+    }
+    .cyber-table .ant-table-tbody > tr > td:nth-child(2):before {
+        content: "TYPE: ";
+    }
+    .cyber-table .ant-table-tbody > tr > td:nth-child(3):before {
+        content: "ITEM ID: ";
+    }
+    .cyber-table .ant-table-tbody > tr > td:nth-child(4):before {
+        content: "TITLE: ";
+    }
+    .cyber-table .ant-table-tbody > tr > td:nth-child(5):before {
+        content: "REPORTS: ";
+    }
+    .cyber-table .ant-table-tbody > tr > td:nth-child(6):before {
+        content: "STATUS: ";
+    }
+    .cyber-table .ant-table-tbody > tr > td:nth-child(7):before {
+        content: "ACTIONS: ";
+    }
+}
             `}</style>
+
         </div>
     );
 };
