@@ -5,7 +5,7 @@ import { message, Avatar } from 'antd';
 import supabase from '../../config/supabase';
 import { formatDate } from "../../pages/admin";
 import { LoadingOutlined } from '@ant-design/icons';
-import { getReportsByPostId } from "../../utils/reports"; // <-- import your utility
+ // <-- import your utility
 
 interface ThreadReportType {
     key: string;
@@ -79,32 +79,45 @@ const ThreadReportsModal: React.FC<ModalProps> = ({
 
     // Fetch post reports (new logic)
     const fetchPostReports = async () => {
-        if (!selectedPost) {
-            setReports([]);
-            return;
-        }
-        setLoading(true);
-        try {
-            const res = await getReportsByPostId(selectedPost);
-            if (!res.success) throw new Error(res.message);
-            const data = res.data || [];
+    if (!selectedPost) {
+        setReports([]);
+        return;
+    }
+    setLoading(true);
+    try {
+        const { data, error } = await supabase
+            .from('thread_reports')
+            .select(`
+                id,
+                reason,
+                description,
+                user_id,
+                created_at,
+                profiles!inner(avatar_url, first_name, last_name)
+            `)
+            .eq('post_id', selectedPost)
+            .order('created_at', { ascending: true });
+
+        if (error) throw error;
+        if (data) {
             const formattedReports: ThreadReportType[] = data.map((report: any) => ({
                 key: report.id,
                 id: report.id,
                 reason: report.reason,
                 description: report.description,
-                reporter_username: report.reporter_name || 'Unknown User',
-                reporter_avatar_url: report.reporter_avatar_url || '',
+                reporter_username: `${report.profiles?.first_name} ${report.profiles?.last_name}` || 'Unknown User',
+                reporter_avatar_url: report.profiles?.avatar_url || '',
                 created_at: formatDate(report.created_at),
             }));
             setReports(formattedReports);
-        } catch (error: any) {
-            message.error(`Failed to load post reports: ${error.message}`);
-            setReports([]);
-        } finally {
-            setLoading(false);
         }
-    };
+    } catch (error: any) {
+        message.error(`Failed to load post reports: ${error.message}`);
+        setReports([]);
+    } finally {
+        setLoading(false);
+    }
+};
 
     useEffect(() => {
         if (!isOpen) {
@@ -134,7 +147,7 @@ const ThreadReportsModal: React.FC<ModalProps> = ({
                 {/* Enhanced Header */}
                 <div className="text-center mb-8">
                     <h3 className="text-2xl lg:text-3xl font-bold font-mowaq text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 tracking-wider mb-2">
-                        THREAD REPORTS
+                        REPORT REASON
                     </h3>
                     {/* <div className="text-cyan-300 text-sm font-mono opacity-80 mb-2">
                         THREAD_ID: <span className="text-[#00DCFF] font-medium">{selectedThread}</span>

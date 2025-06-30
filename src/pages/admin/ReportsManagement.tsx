@@ -6,7 +6,7 @@ import {
 
 import { FaEye, FaShieldAlt, FaExclamationTriangle } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
-import { getReportedThreads, getReportsByPostId } from '../../utils/reports';
+import { getReportedThreads, getReportedPosts } from '../../utils/reports';
 import supabase from '../../config/supabase';
 import ThreadReportsModal from '../../components/dialogs/ThreadReportsModal';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -210,7 +210,7 @@ const [selectedPost, setSelectedPost] = useState<string>('');     // for posts
         try {
             const [threadsResponse, postsResponse] = await Promise.all([
                 getReportedThreads(),
-                getReportsByPostId('all') // Assuming you modify the API to accept 'all' to get all post reports
+                getReportedPosts() // Assuming you modify the API to accept 'all' to get all post reports
             ]);
 
             const allReports: ThreadReportType[] = [];
@@ -442,25 +442,20 @@ const activeReports = reports.filter(r => r.status === 'active').length;
                                 />
 
                                 {/* Status Label */}
-                                <div
-                                    className="absolute top-1 sm:top-2 right-1 sm:right-2 px-1 sm:px-2 py-0.5 sm:py-1 text-xs font-bold font-mono tracking-wider text-black"
-                                    style={{
-                                        background: 'linear-gradient(45deg, #FFD700, #FFA500)',
-                                        clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
-                                        boxShadow: '0 0 10px rgba(255, 215, 0, 0.3)'
-                                    }}
-                                >
-                                    RISK
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-yellow-300 text-xs sm:text-sm mb-1 sm:mb-2 font-mono tracking-wider">HIGH RISK</p>
-                                        <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white font-mono">
-                                            {threads.filter(t => t.total_reports >= 15).length}
-                                        </p>
-                                        <div className="text-xs text-yellow-500 font-mono mt-1">ALERT</div>
-                                    </div>
+                                <div className="absolute top-1 sm:top-2 right-1 sm:right-2 px-1 sm:px-2 py-0.5 sm:py-1 text-xs font-bold font-mono tracking-wider text-black"
+                style={{
+                    background: 'linear-gradient(45deg, #FFD700, #FFA500)',
+                    clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
+                    boxShadow: '0 0 10px rgba(255, 215, 0, 0.3)'
+                }}>
+                RISK
+            </div>
+            <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                    <p className="text-yellow-300 text-xs sm:text-sm mb-1 sm:mb-2 font-mono tracking-wider">HIGH RISK</p>
+                    <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white font-mono">{highRiskReports}</p>
+                    <div className="text-xs text-yellow-500 font-mono mt-1">ALERT</div>
+                </div>
 
                                     <div
                                         className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center flex-shrink-0"
@@ -486,13 +481,11 @@ const activeReports = reports.filter(r => r.status === 'active').length;
 
                         {/* Active Threads Card */}
                         <div className="relative">
-                            <div
-                                className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-green-500/30 p-3 sm:p-4 lg:p-6 relative overflow-hidden"
-                                style={{
-                                    clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
-                                    boxShadow: 'inset 0 0 20px rgba(0, 255, 0, 0.05)'
-                                }}
-                            >
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-green-500/30 p-3 sm:p-4 lg:p-6 relative overflow-hidden"
+            style={{
+                clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
+                boxShadow: 'inset 0 0 20px rgba(0, 255, 0, 0.05)'
+            }}>
                                 {/* Glowing Border Effect */}
                                 <div
                                     className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-500/20 -z-10"
@@ -503,25 +496,20 @@ const activeReports = reports.filter(r => r.status === 'active').length;
                                 />
 
                                 {/* Status Label */}
-                                <div
-                                    className="absolute top-1 sm:top-2 right-1 sm:right-2 px-1 sm:px-2 py-0.5 sm:py-1 text-xs font-bold font-mono tracking-wider text-black"
-                                    style={{
-                                        background: 'linear-gradient(45deg, #00FF88, #00CC66)',
-                                        clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
-                                        boxShadow: '0 0 10px rgba(0, 255, 136, 0.3)'
-                                    }}
-                                >
-                                    ACTIVE
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-green-300 text-xs sm:text-sm mb-1 sm:mb-2 font-mono tracking-wider">ACTIVE</p>
-                                        <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white font-mono">
-                                            {threads.filter(t => t.status === 'active').length}
-                                        </p>
-                                        <div className="text-xs text-green-500 font-mono mt-1">ONLINE</div>
-                                    </div>
+                                 <div className="absolute top-1 sm:top-2 right-1 sm:right-2 px-1 sm:px-2 py-0.5 sm:py-1 text-xs font-bold font-mono tracking-wider text-black"
+                style={{
+                    background: 'linear-gradient(45deg, #00FF88, #00CC66)',
+                    clipPath: 'polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px))',
+                    boxShadow: '0 0 10px rgba(0, 255, 136, 0.3)'
+                }}>
+                ACTIVE
+            </div>
+            <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                    <p className="text-green-300 text-xs sm:text-sm mb-1 sm:mb-2 font-mono tracking-wider">ACTIVE</p>
+                    <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white font-mono">{activeReports}</p>
+                    <div className="text-xs text-green-500 font-mono mt-1">ONLINE</div>
+                </div>
 
                                     <div
                                         className="w-8 h-8 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center flex-shrink-0"
