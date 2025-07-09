@@ -44,6 +44,7 @@ const adminNavItems = [
         icon: <FaExclamationTriangle className="md:text-lg text-base" />,
         label: "Reports",
     }
+    
 ] as const;
 
 const Sidebar: React.FC = () => {

@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import { MdLeaderboard } from "react-icons/md";
 import { TbLogs } from "react-icons/tb";
+import { HiOutlineHomeModern } from "react-icons/hi2";
 
 const userNavItems = [
     {
@@ -43,6 +44,16 @@ const userNavItems = [
         href: "/user/daily-quest",
         icon: <FaHome className="md:text-lg text-base" />,
         label: "Daily Quest",
+    },
+    {
+        href: "/user/creator-dashboard",
+        icon: <HiOutlineHomeModern className="md:text-lg text-base" />,
+        label: "Creator Dashboard",
+    },
+    {
+        href: "/user/app",
+        icon: <HiOutlineHomeModern className="md:text-lg text-base" />,
+        label: "Course Dashboard",
     },
 ] as const;
 

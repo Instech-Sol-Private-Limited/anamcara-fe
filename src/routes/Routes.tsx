@@ -6,6 +6,10 @@ import { ConfigProvider, ThemeConfig } from 'antd';
 import { ChatProvider } from "../context/ChatProvider";
 import LeadershipBoard from "../pages/user/LeadershipBoard";
 import DailyQuest from "../pages/user/DailyQuest";
+import CreatorDashboard from "../pages/user/CreatorDashboard";
+import UserApp from "../pages/user/App";
+
+
 // layouts
 const AuthLayout = lazy(() => import("../layouts/AuthLayout"));
 const Layout = lazy(() => import("../layouts/Layout"));
@@ -16,7 +20,7 @@ const AIGurusLayout = lazy(() => import("../layouts/AIGurusLayout"));
 
 // web pages
 const Home = lazy(() => import("../pages/web/Home"));
-const Blogs = lazy(() => import("../pages/web/Blogs"));
+const Blogs = lazy(() => import("../pages/web/Blogs")); 
 const Chats = lazy(() => import("../pages/web/Chats"));
 
 // auth pages
@@ -130,7 +134,11 @@ const router = createBrowserRouter([
             { path: "user-activity-logs", element: <UserActivityLogs /> },
             { path: "referrals", element: <Referrals /> },       // /user/referrals
             { path: "leadership-board", element: <LeadershipBoard /> },
-            { path: "daily-quest", element: <DailyQuest /> },],
+            { path: "daily-quest", element: <DailyQuest /> },
+            { path: "creator-dashboard", element: <CreatorDashboard /> },
+            { path: "app", element: <UserApp /> },
+        ],
+
     },
 ]);
 

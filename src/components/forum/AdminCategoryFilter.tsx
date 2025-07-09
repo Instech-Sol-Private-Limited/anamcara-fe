@@ -22,7 +22,6 @@ const AdminCategoryFilter: React.FC<AdminCategoryFilterProps> = ({
   const sliderRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
-
   const checkScrollPosition = () => {
     if (sliderRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
