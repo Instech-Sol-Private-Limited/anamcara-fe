@@ -55,6 +55,11 @@ const LeadershipBoard = () => {
     const [bgStyle, setBgStyle] = useState({ width: '0px', transform: 'translateX(0px)' });
     const [userStats, setUserStats] = useState<UserEngagementData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+    const [selectedCity, setSelectedCity] = useState<string | null>(null);
+    const [availableCountries, setAvailableCountries] = useState<string[]>([]);
+    const [availableCities, setAvailableCities] = useState<string[]>([]);
+
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardData>({
         'soul-of-fame': [],
         'weekly-earners': [],
@@ -88,6 +93,14 @@ const LeadershipBoard = () => {
             } else if (selectedFilter === 'soulpoints') {
                 filteredData.sort((a, b) => b.weeklySoulpoints - a.weeklySoulpoints);
             }
+        } else if (activeTab === 'soul-of-fame') {
+            if (selectedFilter === 'country' && selectedCountry) {
+                filteredData = filteredData.filter(user => user.country === selectedCountry);
+            } else if (selectedFilter === 'city' && selectedCity) {
+                filteredData = filteredData.filter(user => user.city === selectedCity);
+            } else if (selectedFilter === 'asia') {
+                filteredData = filteredData.filter(user => user.is_asian);
+            }
         }
 
         return filteredData.slice(0, 10).map((user, index) => ({
@@ -95,6 +108,25 @@ const LeadershipBoard = () => {
             rank: index + 1,
         }));
     };
+
+    // const getFilteredData = (tabData: UserEngagementData[]) => {
+    //     if (!tabData) return [];
+
+    //     let filteredData = [...tabData];
+
+    //     if (activeTab === 'weekly-earners' && selectedFilter !== 'all') {
+    //         if (selectedFilter === 'anamcoins') {
+    //             filteredData.sort((a, b) => b.weeklyAnamcoins - a.weeklyAnamcoins);
+    //         } else if (selectedFilter === 'soulpoints') {
+    //             filteredData.sort((a, b) => b.weeklySoulpoints - a.weeklySoulpoints);
+    //         }
+    //     }
+
+    //     return filteredData.slice(0, 10).map((user, index) => ({
+    //         ...user,
+    //         rank: index + 1,
+    //     }));
+    // };
 
     const getFilterOptions = (): string[] => {
         if (activeTab === 'weekly-earners') {
@@ -216,7 +248,11 @@ const LeadershipBoard = () => {
                     progress: ((userSoulpoints?.points || 0) % 1000) / 10,
                 };
             });
+            const countries = Array.from(new Set(processedData.map(user => user.country).filter(Boolean) as string[]));
+            const cities = Array.from(new Set(processedData.map(user => user.city).filter(Boolean) as string[]));
 
+            setAvailableCountries(countries);
+            setAvailableCities(cities);
             const userData = processedData.find(item => item.user_id === userId);
 
             if (userData)
@@ -314,8 +350,8 @@ const LeadershipBoard = () => {
             </div>
 
             {/* Stats Cards */}
-            <p className='text-white lg:text-base text-sm mb-3'>My Stats</p>
-            
+            <p className='text-white lg:text-lg font-semibold text-base mb-3'>My Stats</p>
+
             <div className="grid sm:grid-cols-2 grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 border border-slate-700/50 shadow-lg">
                     <div className="flex items-center gap-3">
@@ -392,7 +428,7 @@ const LeadershipBoard = () => {
                                 setActiveTab(tab.id);
                                 setSelectedFilter(tab.id === 'weekly-earners' ? 'all' : 'worldwide');
                             }}
-                            className={`relative flex items-center justify-center gap-2 md:px-6 px-3 md:py-4 py-2 rounded-lg transition-all duration-300 whitespace-nowrap skew-x-[27deg] ${activeTab === tab.id
+                            className={`relative flex items-center cursor-pointer justify-center gap-2 md:px-6 px-3 md:py-4 py-2 rounded-lg transition-all duration-300 whitespace-nowrap skew-x-[27deg] ${activeTab === tab.id
                                 ? 'text-white font-semibold'
                                 : 'text-black/80 dark:text-white/80 hover:text-white'} w-auto lg:flex-1`}
                         >
@@ -406,7 +442,7 @@ const LeadershipBoard = () => {
                     ))}
                 </div>
 
-                {/* Filters and Search */}
+                {/* Update the filter UI section */}
                 {Object.keys(filterOptions || {}).includes(activeTab) && (
                     <div className="p-4 border-b border-slate-700/50">
                         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
@@ -415,7 +451,11 @@ const LeadershipBoard = () => {
                                     <Filter className="w-4 h-4 text-slate-400" />
                                     <select
                                         value={selectedFilter}
-                                        onChange={(e) => setSelectedFilter(e.target.value)}
+                                        onChange={(e) => {
+                                            setSelectedFilter(e.target.value);
+                                            setSelectedCountry(null);
+                                            setSelectedCity(null);
+                                        }}
                                         className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         {getFilterOptions().map((option: string) => (
@@ -425,6 +465,34 @@ const LeadershipBoard = () => {
                                         ))}
                                     </select>
                                 </div>
+
+                                {/* Country dropdown */}
+                                {activeTab === 'soul-of-fame' && selectedFilter === 'country' && (
+                                    <select
+                                        value={selectedCountry || ''}
+                                        onChange={(e) => setSelectedCountry(e.target.value || null)}
+                                        className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select Country</option>
+                                        {availableCountries.map(country => (
+                                            <option key={country} value={country}>{country}</option>
+                                        ))}
+                                    </select>
+                                )}
+
+                                {/* City dropdown */}
+                                {activeTab === 'soul-of-fame' && selectedFilter === 'city' && (
+                                    <select
+                                        value={selectedCity || ''}
+                                        onChange={(e) => setSelectedCity(e.target.value || null)}
+                                        className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select City</option>
+                                        {availableCities.map(city => (
+                                            <option key={city} value={city}>{city}</option>
+                                        ))}
+                                    </select>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -434,7 +502,7 @@ const LeadershipBoard = () => {
                 <div className="p-4">
                     {activeTab === 'soul-of-fame' && (
                         <div className="space-y-3">
-                            {leaderboardData['soul-of-fame']?.slice(0, 10).map((user, index) => (
+                            {getFilteredData(leaderboardData['soul-of-fame'])?.map((user, index) => (
                                 <div key={index} className="bg-slate-800 rounded-lg p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-200">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">

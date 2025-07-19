@@ -22,7 +22,6 @@ const Login: React.FC = () => {
             const response = await signIn(email, password);
             if (response.success) {
                 const data = response.data;
-                console.log(response.data)
                 if (data) {
                     setAuthData({
                         accessToken: data?.session.access_token || null,
