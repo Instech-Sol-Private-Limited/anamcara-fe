@@ -8,16 +8,34 @@ import PrimaryButton from '../addons/PrimaryButton';
 import { useNavigate } from 'react-router-dom';
 import { useUserAura } from "../../context/UserAuraContext";
 import UserAvatar from './UserAvatar';
+import { auraMap } from '../../constants';
+import { UserBadge } from '../../types/badges';
+import { getUserBadges } from '../../utils/badge';
+
+const SOUL_TITLE_NAMES = [
+  'Wanderer', 'Light Seeker', 'Insight Whisperer', 'Pathfinder',
+  'Soul Contributor', 'Harmonic Voice', 'Wisdom Weaver',
+  'Echo Guide', 'Anamfriend', 'Elder Soul'
+];
+
+const getSoulTitleAura = (badges: UserBadge[]) => {
+  const soulTitleBadge = badges.find(badge => SOUL_TITLE_NAMES.includes(badge.name));
+  if (!soulTitleBadge) return '';
+
+  return auraMap[soulTitleBadge.color] || '';
+};
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const { auraClass } = useUserAura();
+  const { auraClass, setAuraClass } = useUserAura();
+  const { accessToken, loading, logout, userData } = useAuth();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
-  const { accessToken, loading, logout, userData } = useAuth();
+  const [badges, setBadges] = useState<UserBadge[]>([]);
+  const { userId } = useAuth();
 
   const placeholders = [
     "Search Threads...",
@@ -32,6 +50,30 @@ const Navbar: React.FC = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
   };
+
+  const fetchUserBadges = async () => {
+    try {
+      const response = await getUserBadges(userId);
+
+      if (response.success) {
+        setBadges(response.data.badges);
+      }
+
+    } catch (error) {
+      console.error('Error loading user stats:', error);
+    }
+  }
+
+  useEffect(() => {
+    if (userId) {
+      fetchUserBadges()
+    }
+  }, [userId])
+
+  useEffect(() => {
+    const aura = getSoulTitleAura(badges);
+    setAuraClass(aura);
+  }, [badges, setAuraClass]);
 
   useEffect(() => {
     if (searchValue.length > 0) return;
