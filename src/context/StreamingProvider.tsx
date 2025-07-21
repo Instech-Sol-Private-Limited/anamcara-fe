@@ -10,11 +10,17 @@ const socket = io(`${import.meta.env.VITE_APP_SOCKET_URL}`);
 interface StreamInfo {
   id: string;
   email: string;
+  title: string;
+  category: string;
   createdAt: string;
   viewerCount: number;
   thumbnailUrl?: string | null;
 }
 
+interface DetailsProps {
+  title: string;
+  category: string;
+}
 interface StreamContextType {
   currentStream: StreamInfo | null;
   activeStreams: StreamInfo[];
@@ -32,7 +38,7 @@ interface StreamContextType {
     isSystem: boolean;
     timestamp: Date;
   }>;
-  startStream: () => Promise<void>;
+  startStream: (details: DetailsProps) => Promise<void>;
   stopStream: () => void;
   joinStream: (id: string) => Promise<void>;
   leaveStream: () => void;
@@ -68,7 +74,6 @@ export const StreamingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [micActive, setMicActive] = useState(true);
   const [viewers, setViewers] = useState(0);
   const [chatMessages, setChatMessages] = useState<StreamContextType['chatMessages']>([]);
-
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
   const cameraBubbleRef = useRef<HTMLVideoElement | null>(null);
@@ -238,7 +243,7 @@ export const StreamingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setChatMessages([]);
   }, [localStream, screenStream]);
 
-  const startStream = useCallback(async () => {
+  const startStream = useCallback(async (details: DetailsProps) => {
     if (!userData.email) return;
 
     try {
@@ -280,6 +285,8 @@ export const StreamingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const streamInfo: StreamInfo = {
         id: streamId,
         email: userData.email,
+        title: details.title,
+        category: details.category,
         createdAt: new Date().toISOString(),
         viewerCount: 1,
         thumbnailUrl
@@ -294,7 +301,9 @@ export const StreamingProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       socket.emit("create_stream", {
         streamId,
         email: userData.email,
-        thumbnailUrl
+        title: details.title,
+        category: details.category,
+        thumbnailUrl,
       });
 
       // Add system message

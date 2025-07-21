@@ -27,7 +27,7 @@ const Navbar: React.FC = () => {
     };
 
     return (
-        <div className="fixed top-0 left-0 w-full z-50 shadow-lg text-white flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 bg-transparent">
+        <div className="fixed top-0 left-0 w-full z-[99] shadow-lg text-white flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 bg-transparent">
             {/* Logo */}
             <div
                 className="flex flex-col sm:flex-row items-center cursor-pointer space-x-2 sm:space-x-1"
@@ -127,7 +127,7 @@ const Navbar: React.FC = () => {
 
             {/* Mobile Sidebar (Left Slide-in) */}
             <div
-                className={`fixed inset-y-0 left-0 w-64 bg-[#111]/90 shadow-lg transform ${isMenuOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed flex flex-col h-full inset-y-0 left-0 w-64 bg-[#111]/90 shadow-lg transform ${isMenuOpen ? "translate-x-0" : "-translate-x-full"
                     } transition-transform duration-500 ease-in-out z-50 lg:hidden`}
             >
                 {/* Close Button */}
@@ -138,7 +138,7 @@ const Navbar: React.FC = () => {
                 </div>
 
                 {/* Sidebar Links */}
-                <div className="flex flex-col space-y-6 px-6">
+                <div className="flex flex-col space-y-6 px-6 flex-grow">
                     {navlinks.map((link, index) => (
                         <div key={index} className="relative">
                             {link?.hasDropdown ? (
@@ -191,6 +191,24 @@ const Navbar: React.FC = () => {
                             )}
                         </div>
                     ))}
+                </div>
+
+                <div className="w-full px-4 mx-auto">
+                    {accessToken ? (
+                        <button
+                            onClick={() => navigate(role === "superadmin" ? '/admin/dashboard' : '/user/dashboard')}
+                            className="w-full px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
+                        >
+                            Dashboard
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => navigate('/auth/login')}
+                            className="px-4 py-2 text-sm font-medium border border-[#ADFF00] transition-all duration-300 bg-[#ADFF00] text-black font-mowaq hover:bg-black hover:text-white"
+                        >
+                            Get Connected
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

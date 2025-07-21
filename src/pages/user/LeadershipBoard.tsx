@@ -59,7 +59,6 @@ const LeadershipBoard = () => {
     const [selectedCity, setSelectedCity] = useState<string | null>(null);
     const [availableCountries, setAvailableCountries] = useState<string[]>([]);
     const [availableCities, setAvailableCities] = useState<string[]>([]);
-
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardData>({
         'soul-of-fame': [],
         'weekly-earners': [],
@@ -108,25 +107,6 @@ const LeadershipBoard = () => {
             rank: index + 1,
         }));
     };
-
-    // const getFilteredData = (tabData: UserEngagementData[]) => {
-    //     if (!tabData) return [];
-
-    //     let filteredData = [...tabData];
-
-    //     if (activeTab === 'weekly-earners' && selectedFilter !== 'all') {
-    //         if (selectedFilter === 'anamcoins') {
-    //             filteredData.sort((a, b) => b.weeklyAnamcoins - a.weeklyAnamcoins);
-    //         } else if (selectedFilter === 'soulpoints') {
-    //             filteredData.sort((a, b) => b.weeklySoulpoints - a.weeklySoulpoints);
-    //         }
-    //     }
-
-    //     return filteredData.slice(0, 10).map((user, index) => ({
-    //         ...user,
-    //         rank: index + 1,
-    //     }));
-    // };
 
     const getFilterOptions = (): string[] => {
         if (activeTab === 'weekly-earners') {
@@ -331,7 +311,7 @@ const LeadershipBoard = () => {
     return (
         <div className="min-h-screen bg-slate-950 p-3 sm:p-4 md:p-6">
             {/* Header */}
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex sm:flex-row flex-col sm:text-left text-center items-center gap-4 mb-8">
                 <div className="relative">
                     <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-[#0766FF] to-[#00DCFF] rounded-full flex items-center justify-center shadow-2xl shadow-[#00DCFF]/30">
                         <ChartPie className="w-8 h-8 md:w-10 md:h-10 text-white" />
@@ -445,7 +425,7 @@ const LeadershipBoard = () => {
                 {/* Update the filter UI section */}
                 {Object.keys(filterOptions || {}).includes(activeTab) && (
                     <div className="p-4 border-b border-slate-700/50">
-                        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                        <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
                                     <Filter className="w-4 h-4 text-slate-400" />
@@ -504,16 +484,16 @@ const LeadershipBoard = () => {
                         <div className="space-y-3">
                             {getFilteredData(leaderboardData['soul-of-fame'])?.map((user, index) => (
                                 <div key={index} className="bg-slate-800 rounded-lg p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-200">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
+                                    <div className="flex md:flex-row flex-col md:items-center justify-between">
+                                        <div className="flex md:items-center md:flex-row flex-col gap-4">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-2xl">{getRankIcon(user.rank || 0)}</span>
-                                                <span className={`text-2xl font-bold ${getRankColor(user.rank || 0)}`}>#{user.rank}</span>
+                                                <span className="md:text-2xl text-xl">{getRankIcon(user.rank || 0)}</span>
+                                                <span className={`md:text-2xl text-xl font-bold ${getRankColor(user.rank || 0)}`}>#{user.rank}</span>
                                             </div>
                                             <div>
                                                 <h3 className="text-white font-semibold">{user.name}</h3>
-                                                <p className="text-slate-400 text-sm flex items-center gap-1">
-                                                    <Globe className="w-3 h-3" />
+                                                <p className="text-slate-400 md:text-sm text-xs flex gap-1">
+                                                    <Globe className="w-3 h-3 mt-1" />
                                                     {user.location} • {user.is_asian ? 'Asia' : 'Global'} • Level {user.level}
                                                 </p>
                                             </div>
@@ -534,11 +514,11 @@ const LeadershipBoard = () => {
                         <div className="space-y-3">
                             {getFilteredData(leaderboardData['weekly-earners'])?.map((user, index) => (
                                 <div key={index} className="bg-slate-800 rounded-lg p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-200">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
+                                    <div className="flex md:flex-row flex-col md:items-center justify-between">
+                                        <div className="flex md:items-center md:flex-row flex-col gap-4">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-2xl">{getRankIcon(user.rank || 0)}</span>
-                                                <span className={`text-2xl font-bold ${getRankColor(user.rank || 0)}`}>#{user.rank}</span>
+                                                <span className="md:text-2xl text-xl">{getRankIcon(user.rank || 0)}</span>
+                                                <span className={`md:text-2xl text-xl font-bold ${getRankColor(user.rank || 0)}`}>#{user.rank}</span>
                                             </div>
                                             <div>
                                                 <h3 className="text-white font-semibold">{user.name}</h3>
@@ -576,11 +556,11 @@ const LeadershipBoard = () => {
                         <div className="space-y-3">
                             {leaderboardData['wealthiest-souls']?.slice(0, 10).map((user, index) => (
                                 <div key={index} className="bg-slate-800 rounded-lg p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-200">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
+                                    <div className="flex md:flex-row flex-col md:items-center justify-between">
+                                        <div className="flex md:items-center md:flex-row flex-col gap-4">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-2xl">{getRankIcon(user.rank || 0)}</span>
-                                                <span className={`text-2xl font-bold ${getRankColor(user.rank || 0)}`}>#{user.rank}</span>
+                                                <span className="md:text-2xl text-xl">{getRankIcon(user.rank || 0)}</span>
+                                                <span className={`md:text-2xl text-xl font-bold ${getRankColor(user.rank || 0)}`}>#{user.rank}</span>
                                             </div>
                                             <div>
                                                 <h3 className="text-white font-semibold">{user.name}</h3>
@@ -603,11 +583,11 @@ const LeadershipBoard = () => {
                         <div className="space-y-3">
                             {leaderboardData['soul-title-ladder']?.slice(0, 10).map((user, index) => (
                                 <div key={index} className="bg-slate-800 rounded-lg p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-200">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
+                                    <div className="flex md:flex-row flex-col md:items-center justify-between">
+                                        <div className="flex md:items-center md:flex-row flex-col gap-4">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-2xl">{getRankIcon(user.rank || 0)}</span>
-                                                <span className={`text-2xl font-bold ${getRankColor(user.rank || 0)}`}>#{user.rank}</span>
+                                                <span className="md:text-2xl text-xl">{getRankIcon(user.rank || 0)}</span>
+                                                <span className={`md:text-2xl text-xl font-bold ${getRankColor(user.rank || 0)}`}>#{user.rank}</span>
                                             </div>
                                             <div>
                                                 <h3 className="text-white font-semibold">{user.name}</h3>
@@ -635,16 +615,16 @@ const LeadershipBoard = () => {
                         <div className="space-y-3">
                             {leaderboardData['top-engagers']?.slice(0, 10).map((user, index) => (
                                 <div key={index} className="bg-slate-800 rounded-lg p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-200">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
+                                    <div className="flex md:flex-row flex-col md:items-center justify-between">
+                                        <div className="flex md:items-center md:flex-row flex-col gap-4">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-2xl">{getRankIcon(user.rank || 0)}</span>
-                                                <span className={`text-2xl font-bold ${getRankColor(user.rank || 0)}`}>#{user.rank}</span>
+                                                <span className="md:text-2xl text-xl">{getRankIcon(user.rank || 0)}</span>
+                                                <span className={`md:text-2xl text-xl font-bold ${getRankColor(user.rank || 0)}`}>#{user.rank}</span>
                                             </div>
                                             <div>
                                                 <h3 className="text-white font-semibold">{user.name}</h3>
-                                                <p className="text-slate-400 text-sm flex items-center gap-1">
-                                                    <MessageCircle className="w-3 h-3" />
+                                                <p className="text-slate-400 text-sm flex gap-1">
+                                                    <MessageCircle className="w-3 h-3 mt-1" />
                                                     {user.posts} posts • {user.replies} replies • {user.reactions} reactions
                                                 </p>
                                             </div>

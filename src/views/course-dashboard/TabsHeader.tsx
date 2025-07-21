@@ -30,7 +30,6 @@ const TabsHeader: React.FC<TabsHeaderProps> = ({
     const tabIndex = visibleTabs.findIndex((tab) => tab.id === activeTab);
     const tabCount = visibleTabs.length;
 
-    // Convert hex to RGB for opacity control
     const hexToRgb = (hex: string) => {
         const r = parseInt(hex.slice(1, 3), 16);
         const g = parseInt(hex.slice(3, 5), 16);
@@ -77,6 +76,7 @@ const TabsHeader: React.FC<TabsHeaderProps> = ({
                         >
                             <div className="flex items-center gap-2">
                                 {tab.icon}
+                                
                                 {tab.showCount && tab.count !== undefined && (
                                     <div
                                         className="px-2 py-1 rounded-full text-xs font-bold transition-all duration-300"

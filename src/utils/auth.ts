@@ -15,7 +15,6 @@ interface UserProfile {
 }
 
 // Simplified signUp function - let the database trigger handle everything
-// Simplified signUp function - let the database trigger handle everything
 const signUp = async (
     email: string, 
     password: string, 

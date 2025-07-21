@@ -227,15 +227,17 @@ const AnamCoinsPage = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row items-center justify-between mb-6 space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-4">
+            <div className="flex sm:flex-row flex-col sm:text-left text-center items-center gap-4 mb-8">
               <div className="relative">
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-2xl shadow-amber-500/50">
                   <Coins className="w-8 h-8 md:w-10 md:h-10 text-white" />
                 </div>
+                
                 <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-slate-950 flex items-center justify-center">
                   <Zap className="w-3 h-3 text-white" />
                 </div>
               </div>
+
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 font-mowaq">
                   ANAMCOINS

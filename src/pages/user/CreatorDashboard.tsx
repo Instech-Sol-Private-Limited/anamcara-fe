@@ -1,10 +1,10 @@
 import {
   Home,
   Radio,
-  BarChart3,
+  // BarChart3,
   Users,
-  FileText,
-  Settings,
+  // FileText,
+  // Settings,
   GraduationCap,
   DollarSign,
   Clock,
@@ -15,7 +15,7 @@ import TabsHeader from '../../views/course-dashboard/TabsHeader';
 import { useState } from 'react';
 import CreatorHome from '../../views/course-dashboard/components/CreatorHome';
 import StreamManager from '../../views/course-dashboard/components/StreamManager';
-import StreamBrowser from '../../views/course-dashboard/components/StreamBrowser';
+import CreatorCamp from '../../views/course-dashboard/components/CreatorCamp';
 import { StreamingProvider } from '../../context/StreamingProvider';
 
 const CreatorDashboard = () => {
@@ -24,10 +24,10 @@ const CreatorDashboard = () => {
   const dashboardTabs = [
     { id: 'home', label: 'Home', icon: <Home className="w-5 h-5" /> },
     { id: 'stream-manager', label: 'Stream Manager', icon: <Radio className="w-5 h-5" /> },
-    { id: 'analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" /> },
-    { id: 'content', label: 'Content', icon: <FileText className="w-5 h-5" /> },
-    { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
-    { id: 'creator-camp', label: 'Creator', icon: <GraduationCap className="w-5 h-5" /> },
+    { id: 'creator-camp', label: 'Creator Camp', icon: <GraduationCap className="w-5 h-5" /> },
+    // { id: 'analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" /> },
+    // { id: 'content', label: 'Content', icon: <FileText className="w-5 h-5" /> },
+    // { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
   ];
 
   const statsData = [
@@ -66,9 +66,9 @@ const CreatorDashboard = () => {
   ];
 
   return (
-    <div className="h-[calc(100vh-150px)] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 scrollbar-thumb-rounded-full bg-slate-950/90 p-4 md:p-6 rounded-3xl border border-slate-800/50">
+    <div className="h-[calc(100vh-80px)] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 scrollbar-thumb-rounded-full bg-slate-950/90 p-4 md:p-6 rounded-3xl border border-slate-800/50">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex sm:flex-row flex-col sm:text-left text-center items-center gap-4 mb-8">
         <div className="relative group cursor-pointer">
           <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-[#310050] to-[#a70075] rounded-full flex items-center justify-center shadow-2xl shadow-[#a70075]/50 group-hover:shadow-[#a70075] transition-all duration-300">
             <FaStudiovinari className="w-8 h-8 md:w-10 md:h-10 text-white group-hover:scale-110 transition-transform" />
@@ -129,8 +129,8 @@ const CreatorDashboard = () => {
             {activeTab === "home" ? <CreatorHome />
               : activeTab === "stream-manager" ?
                 <StreamManager />
-                : activeTab === 'analytics' ?
-                  <StreamBrowser /> : null}
+                : activeTab === 'creator-camp' ?
+                  <CreatorCamp /> : null}
           </StreamingProvider>
         </div>
       </div>
