@@ -1,5 +1,5 @@
-let environment = "dev";
-// let environment = "production";
+// let environment = "dev";
+let environment = "production";
 
 const config = {
     baseURL:
