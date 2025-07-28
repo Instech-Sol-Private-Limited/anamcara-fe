@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, Users, DollarSign, BookOpen, Eye, Calendar, BarChart3, PieChart } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, BookOpen, Eye, BarChart3 } from 'lucide-react';
 
 const AnalyticsPage: React.FC = () => {
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');

@@ -6,7 +6,6 @@ import {
   BarChart3, 
   Settings, 
   Plus,
-  GraduationCap,
   Star,
   Calendar
 } from 'lucide-react';

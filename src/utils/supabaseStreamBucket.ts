@@ -6,7 +6,7 @@ export const uploadToStreamSupabase = async (file: File) => {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
         const filePath = `streams/${fileName}`;
-
+        // @ts-ignore
         const { data, error } = await supabase.storage
             .from('blog-images')
             .upload(filePath, file, {

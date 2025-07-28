@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, ChevronDown, ChevronRight, Contrast as DragDropContext, Droplet as Droppable, Cable as Draggable } from 'lucide-react';
+import { Plus, Edit, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
 import { Course, Section, Lesson } from '../../../types/course';
 
 interface CurriculumStepProps {
@@ -143,7 +143,7 @@ const CurriculumStep: React.FC<CurriculumStepProps> = ({ courseData, setCourseDa
       </div>
 
       <div className="space-y-4">
-        {(courseData.sections || []).map((section, sectionIndex) => (
+        {(courseData.sections || []).map((section) => (
           <div key={section.id} className="border border-amber-500/50 bg-slate-900/50  font-mono rounded-lg">
             <div className="p-4 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 shadow-lg">
               <div className="flex items-center justify-between">

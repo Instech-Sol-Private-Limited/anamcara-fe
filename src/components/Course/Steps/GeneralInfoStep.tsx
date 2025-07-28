@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Upload, Link, Globe } from 'lucide-react';
+import { Upload, Link } from 'lucide-react';
 import { Course, Category } from '../../../types/course';
 
 interface GeneralInfoStepProps {

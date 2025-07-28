@@ -18,6 +18,7 @@ type Phase = "hero" | "landing" | "survey";
 const IntroHome: React.FC = () => {
     const hoverRadius = 10;
     const [phase, setPhase] = useState<Phase>("hero");
+    // @ts-ignore
     const [paddingTop, setPaddingTop] = useState("300px");
     const [windowSize, setWindowSize] = useState<windowSizeProps>({
         width: null,
@@ -234,7 +235,7 @@ const IntroHome: React.FC = () => {
                             >
                                 <CusrorEffect areaId="survey-area" />
 
-                                <div className="blank" style={{ paddingTop }} ></div>
+                                {/* <div className="md:block hidden" style={{ paddingTop }} ></div> */}
                                 <RobotAnimation />
 
                                 <Survey onSkipToMain={() => handlePhaseChange("hero")} />
@@ -242,7 +243,7 @@ const IntroHome: React.FC = () => {
                         ) : (
                             <motion.div
                                 id="survey-area"
-                                className="absolute w-1/2 left-0 h-full flex flex-1 flex-col items-center justify-center text-white space-y-6"
+                                className="absolute w-1/2 left-0 top-0 h-full flex flex-1 flex-col items-center justify-center text-white space-y-6"
                                 initial={{ x: "-100%" }}
                                 animate={{ x: 0 }}
                                 exit={{ opacity: 0 }}

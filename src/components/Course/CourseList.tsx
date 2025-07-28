@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, Plus, Edit, Eye, Trash2, Star, Users, BookOpen } from 'lucide-react';
+import { Search, Plus, Edit, Eye, Trash2, Star, Users, BookOpen } from 'lucide-react';
 import { Course } from '../../types/course';
 
 interface CourseListProps {

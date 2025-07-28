@@ -122,7 +122,7 @@ const Survey: React.FC<SurveyProps> = ({ onSkipToMain }) => {
                 {/* TF Question */}
                 {tfQuestion && (
                     <div className="true flex flex-col space-y-6">
-                        <h1 className="text-white text-3xl sm:text-2xl lg:text-2xl font-bold text-left">
+                        <h1 className="text-white font-mowaq text-3xl sm:text-2xl lg:text-2xl font-bold text-left">
                             {tfQuestion.question}
                         </h1>
                         <div className="flex flex-wrap gap-4">
@@ -132,7 +132,7 @@ const Survey: React.FC<SurveyProps> = ({ onSkipToMain }) => {
                                     <button
                                         key={idx}
                                         onClick={() => setSelectedTF(answer)}
-                                        className={`w-32 text-center px-6 py-2 text-lg font-medium rounded-full transition-all 
+                                        className={`w-32 font-mowaq text-center px-6 py-2 text-lg font-medium rounded-full transition-all 
                     ${isSelected
                                                 ? "bg-[#ADFF00] text-black border-2 border-black"
                                                 : "bg-transparent text-[#ADFF00] border-2 border-[#BCFF9D] hover:bg-[#ADFF00] hover:text-black hover:border-black"
@@ -149,7 +149,7 @@ const Survey: React.FC<SurveyProps> = ({ onSkipToMain }) => {
                 {/* MCQ Question */}
                 {mcqQuestion && (
                     <div className="mcq flex flex-col space-y-6">
-                        <h1 className="mcq-q text-white text-2xl sm:text-3xl lg:text-2xl font-bold text-left">
+                        <h1 className="mcq-q font-mowaq text-white text-2xl sm:text-3xl lg:text-2xl font-bold text-left">
                             {mcqQuestion.question}
                         </h1>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -186,7 +186,7 @@ const Survey: React.FC<SurveyProps> = ({ onSkipToMain }) => {
 
                 {/* Static Question */}
                 <div className="static flex flex-col space-y-6">
-                    <h1 className="text-white text-2xl sm:text-3xl lg:text-2xl font-bold text-left">
+                    <h1 className="text-white font-mowaq text-2xl sm:text-3xl lg:text-2xl font-bold text-left">
                         Who would you rather save?
                     </h1>
                     <div className="option flex flex-wrap gap-4">
@@ -213,14 +213,14 @@ const Survey: React.FC<SurveyProps> = ({ onSkipToMain }) => {
                 <div className="flex flex-wrap items-center gap-4">
                     <button
                         onClick={handleButtonClick}
-                        className="px-4 sm:px-6 py-2 text-sm sm:text-lg font-bold text-black bg-[#ADFF00] rounded-lg hover:bg-black hover:text-white border-2 border-[#BCFF9D] transition-all"
+                        className="px-4 sm:px-6 py-2 font-mowaq text-sm sm:text-lg font-bold text-black bg-[#ADFF00] rounded-lg hover:bg-black hover:text-white border-2 border-[#BCFF9D] transition-all"
                         style={{ boxShadow: "0px 0px 15px #3FA604" }}
                     >
                         I HAVE OBLIGED
                     </button>
                     <Link
                         onClick={onSkipToMain}
-                        className="text-white text-sm sm:text-lg font-medium cursor-pointer"
+                        className="text-white text-sm font-mowaq sm:text-lg font-medium cursor-pointer"
                         to={"/home"}
                     >
                         SKIP TO MAIN PAGE →

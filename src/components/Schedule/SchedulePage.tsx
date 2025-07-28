@@ -19,7 +19,6 @@ interface ScheduleEvent {
 
 const SchedulePage: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<'month' | 'week' | 'day'>('month');
   const [showEventModal, setShowEventModal] = useState(false);
 
   // Mock schedule data
