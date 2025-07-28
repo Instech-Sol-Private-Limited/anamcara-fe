@@ -193,7 +193,7 @@ const Navbar: React.FC = () => {
                     ))}
                 </div>
 
-                <div className="w-full px-4 mx-auto">
+                <div className="w-full px-4 py-4 mx-auto">
                     {accessToken ? (
                         <button
                             onClick={() => navigate(role === "superadmin" ? '/admin/dashboard' : '/user/dashboard')}

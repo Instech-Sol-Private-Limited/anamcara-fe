@@ -4,7 +4,7 @@ import { useAuth } from '../../../context/AuthProvider';
 export default function CreatorCamp() {
   const { userData: user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [streamHistory, setStreamHistory] = useState([
+  const streamHistory = [
     {
       id: '1',
       title: 'Gaming Session #47',
@@ -55,7 +55,7 @@ export default function CreatorCamp() {
       anaCoinsEarned: 98.70,
       status: 'completed'
     }
-  ]);
+  ];
 
   // Calculate overall stats
   const totalViews = streamHistory.reduce((sum, stream) => sum + stream.totalViews, 0);
@@ -76,7 +76,7 @@ export default function CreatorCamp() {
     });
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (_status: string) => {
     return (
       <span className="px-2 py-1 bg-green-900/30 border border-green-500/30 text-green-300 text-xs rounded-full">
         Completed

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, Users, Mail, Calendar, BookOpen, Star, MoreVertical, UserPlus, Download, Eye } from 'lucide-react';
+import { Search, Users, Mail, BookOpen, Star, MoreVertical, UserPlus, Download, Eye } from 'lucide-react';
 
 interface Student {
   id: string;

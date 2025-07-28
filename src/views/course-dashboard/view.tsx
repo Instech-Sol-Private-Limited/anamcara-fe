@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Home, Radio, Bell, BarChart3, Users, FileText, Settings, Gift, UserPlus, Wrench, Puzzle, GraduationCap, Shield, ChevronDown, ChevronRight, Star, Eye, MessageSquare,
-  Calendar, Music, Gamepad2, Monitor, Headphones, Zap, Target, DollarSign, Clock, Play, Search,
+  Calendar, Music, Gamepad2, Monitor, Headphones, Zap, Target, DollarSign, Clock, Play,
   Share2, MoreHorizontal, Maximize, Send, HelpCircle, CheckCircle, Cog, Palette,
   Plus,
   Edit,
@@ -12,7 +12,7 @@ interface CreatorDashboardProps {
   onNavigate?: (path: string) => void;
 }
 
-const CreatorDashboard: React.FC<CreatorDashboardProps> = ({ onNavigate }) => {
+const CreatorDashboard: React.FC<CreatorDashboardProps> = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
 

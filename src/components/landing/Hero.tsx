@@ -8,7 +8,7 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ audio }) => {
     const hoverRadius = 10;
     const [welcomeText] = useState("WELCOME");
-    const [humanText] = useState("HUMAN  ...");
+    const [humanText] = useState("HUMAN...");
     const stars = Array.from({ length: 150 }, () => ({
         x: Math.random() * 100,
         y: Math.random() * 100,
@@ -41,9 +41,9 @@ const Hero: React.FC<HeroProps> = ({ audio }) => {
     };
 
     return (
-        <div className="relative w-full h-screen overflow-y-auto flex items-center justify-center">
-            <div className="absolute inset-0 z-0" />
-            <div className="relative z-10 flex w-full h-full justify-evenly items-center gap-[30rem] max-[1270px]:flex-col max-[1270px]:gap-0 max-[1270px]:h-[60%]">
+        <div className="relative w-full py-10 xl:h-screen h-fit overflow-y-auto flex items-center justify-center">
+            {/* <div className="absolute inset-0 z-0" /> */}
+            <div className="relative z-10 flex w-full justify-evenly items-center xl:flex-row flex-col xl:gap-[30rem] gap-4 ">
                 {/* Welcome Block */}
                 <motion.div
                     className="relative flex justify-center items-center p-4 h-full w-auto max-[1270px]:w-full"
@@ -62,7 +62,7 @@ const Hero: React.FC<HeroProps> = ({ audio }) => {
                         ))}
                     </div>
 
-                    <motion.h1 className="font-bold text-center whitespace-nowrap font-[Mowaq] text-[#a0ff06] text-[clamp(3rem,5vw,7rem)]">
+                    <motion.h1 className="font-bold text-center whitespace-nowrap font-mowaq text-[#a0ff06]  xl:text-6xl lg:text-5xl md:text-4xl text-3xl">
                         {welcomeText.split("").map((letter, i) => (
                             <motion.span
                                 key={i}
@@ -86,7 +86,7 @@ const Hero: React.FC<HeroProps> = ({ audio }) => {
 
                 {/* Human Block */}
                 <motion.div
-                    className="relative flex justify-center items-center p-4 h-full w-auto max-[1270px]:w-full"
+                    className="relative flex justify-center items-center px-4 h-full w-auto max-[1270px]:w-full"
                     id="human-area"
                     onMouseMove={(e) => handleMouseMove(e, "human-area")}
                     onMouseLeave={() => handleMouseLeave("human-area")}
@@ -102,7 +102,7 @@ const Hero: React.FC<HeroProps> = ({ audio }) => {
                         ))}
                     </div>
                     {audio}
-                    <motion.h1 className="font-bold text-center whitespace-nowrap font-[Mowaq] text-[#a0ff06] text-[clamp(3rem,5vw,7rem)]">
+                    <motion.h1 className="font-bold text-center whitespace-nowrap font-[Mowaq] text-[#a0ff06] xl:text-6xl lg:text-5xl md:text-4xl text-3xl">
                         {humanText.split("").map((letter, i) => (
                             <motion.span
                                 key={i}
