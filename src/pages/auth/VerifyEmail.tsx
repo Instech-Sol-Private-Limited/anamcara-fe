@@ -1,83 +1,67 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { getSession } from '../../utils/auth';
 
 const VerifyEmail = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [email, setEmail] = useState<string | null>(null);
+  const [status, setStatus] = useState<'loading' | 'verified' | 'unverified'>('loading');
 
   useEffect(() => {
-    const verifyEmail = async () => {
-      const searchParams = new URLSearchParams(location.search);
-      const userEmail = searchParams.get('user');
-
-      if (!userEmail) {
-        setStatus('error');
-        return;
-      }
-
-      setEmail(userEmail);
-      setStatus('loading');
-
+    const checkVerification = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_APP_URL_LOCAL}/users/verify?email=${userEmail}`
-        );
-
-        if (response.status === 200) {
-          setStatus('success');
-        } else {
-          setStatus('error');
+        const { success } = await getSession();
+        setStatus(success ? 'verified' : 'unverified');
+        
+        if (success) {
+          setTimeout(() => navigate('/home'), 1500);
         }
       } catch (error) {
-        setStatus('error');
+        console.error('Verification check error:', error);
+        setStatus('unverified');
       }
     };
 
-    verifyEmail();
-  }, []);
+    checkVerification();
+  }, [navigate]);
+
+  if (status === 'loading') {
+    return (
+      <div className="text-center p-6">
+        <div className="inline-flex space-x-2 p-4">
+          {[...Array(3)].map((_, i) => (
+            <div 
+              key={i}
+              className="w-2 h-2 bg-[#A0FF06] rounded-full animate-bounce"
+              style={{ animationDelay: `${i * 0.2}s` }}
+            />
+          ))}
+        </div>
+        <p className="text-gray-400">Checking verification status...</p>
+      </div>
+    );
+  }
+
+  if (status === 'verified') {
+    return (
+      <div className="text-center p-6">
+        <h2 className="text-xl font-semibold text-[#A0FF06] mb-2">Email Verified</h2>
+        <p className="text-gray-300">Redirecting you to home page...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-[500px] mx-auto mt-16 p-6 bg-gray-900 border border-gray-700 rounded-lg shadow-lg text-center text-white">
-      {status === 'loading' && (
-        <>
-          <h2 className="text-2xl font-semibold mb-3">Verifying Email...</h2>
-          <p className="text-gray-300">Please wait while we verify your account.</p>
-        </>
-      )}
-
-      {status === 'success' && (
-        <>
-          <h2 className="text-2xl font-semibold text-[#A0FF06] mb-2">🎉 Email Verified Successfully!</h2>
-          <p className="text-gray-300 mb-4">
-            Your email <strong className="text-white">{email}</strong> has been verified.
-            You can now log in to your account.
-          </p>
-          <button
-            onClick={() => navigate('/auth/login')}
-            className="w-full py-2 bg-[#A0FF06] text-black font-medium rounded-md hover:bg-lime-400 transition"
-          >
-            Go to Login
-          </button>
-        </>
-      )}
-
-      {status === 'error' && (
-        <>
-          <h2 className="text-2xl font-semibold text-red-400 mb-2"> Verification Failed</h2>
-          <p className="text-gray-300 mb-4">
-            We couldn't verify your email. The link may be invalid or expired.
-          </p>
-          <button
-            onClick={() => navigate('/auth/login')}
-            className="w-full py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition"
-          >
-            Return to Login
-          </button>
-        </>
-      )}
+    <div className="text-center p-6">
+      <h2 className="text-xl font-semibold mb-3">Verification Needed</h2>
+      <p className="text-gray-300 mb-4">
+        Your email verification link has expired or is invalid.
+      </p>
+      <button
+        onClick={() => navigate('/auth/register')}
+        className="px-4 py-2 bg-[#A0FF06] hover:bg-lime-400 text-black rounded-md"
+      >
+        Register Again
+      </button>
     </div>
   );
 };

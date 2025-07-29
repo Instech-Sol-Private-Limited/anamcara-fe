@@ -4,8 +4,9 @@ import { useAuth } from "./AuthProvider";
 import { getActiveStreams } from "../utils/streams";
 import { toast } from "react-toastify";
 import { uploadToStreamSupabase } from "../utils/supabaseStreamBucket";
+import config from "../config/config";
 
-const socket = io(`${import.meta.env.VITE_APP_SOCKET_URL}`);
+const socket = io(`${config.socketUrl}`);
 
 interface StreamInfo {
   id: string;

@@ -1,3 +1,4 @@
+import config from '../config/config';
 import supabase from '../config/supabase';
 
 type UserRole = 'superadmin' | 'user' | 'guest';
@@ -14,18 +15,16 @@ interface UserProfile {
     updated_at: string;
 }
 
-// Simplified signUp function - let the database trigger handle everything
 const signUp = async (
-    email: string, 
-    password: string, 
-    firstName: string, 
-    lastName: string, 
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
     referralCode?: string | null
 ) => {
     try {
-        const redirectTo = `${window.location.origin}/auth/verify-email/`;
-        
-        // Create the user account - trigger will handle profile creation
+        const redirectTo = `${config.siteUrl}/auth/verify-email/`;
+
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -39,64 +38,54 @@ const signUp = async (
         });
 
         if (error) {
-            console.error('Supabase signup error:', error);
-            return { success: false, message: error.message };
+            return {
+                status: false,
+                message: `Error: ${error}`
+            };
         }
 
-        if (!data.user) {
-            return { success: false, message: 'User creation failed' };
+        let isVerified = false;
+        if (Array.isArray(data.user?.identities)) {
+            if (data.user.identities.length === 0) {
+                isVerified = true;
+            } else {
+                isVerified = data.user.identities.some(
+                    identity => identity.identity_data?.email_verified === true
+                );
+            }
         }
 
-        // Process referral if provided
         if (referralCode && data.user) {
             try {
-                // Call the database function to process referral
-                const { data: referralResult, error: referralError } = await supabase
-                    .rpc('process_referral', {
-                        p_referral_code: referralCode,
-                        p_referred_user_id: data.user.id
-                    });
-                    console.log('Referral RPC result:', referralResult, referralError);
-
-                if (referralError) {
-                    console.error('Referral processing error:', referralError);
-                } else if (referralResult) {
-                    console.log('Referral processed successfully');
-                } else {
-                    console.warn('Referral processing failed - invalid code or other issue');
-                }
+                await supabase.rpc('process_referral', {
+                    p_referral_code: referralCode,
+                    p_referred_user_id: data.user.id
+                });
             } catch (referralError) {
-                console.error('Error processing referral:', referralError);
+                console.error('Referral processing error:', referralError);
             }
-            
-            // Clear stored referral code
+
             try {
                 const { default: referralService } = await import('./Refferal');
                 referralService.clearStoredReferralCode();
             } catch (e) {
                 console.error('Error clearing referral code:', e);
             }
-        } else {
-            // Clear stored referral code even if no referral was used
-            try {
-                const { default: referralService } = await import('./Refferal');
-                referralService.clearStoredReferralCode();
-            } catch (e) {
-                // Ignore errors
-            }
         }
 
-        return { 
-            success: true, 
-            user: { id: 'user-uuid' },
-            message: "User successfully registered! Please check your email to verify your account." 
+        return {
+            status: isVerified ? 'verified' : 'registered',
+            message: isVerified
+                ? 'Email is already registered!'
+                : 'Registration successful! Please check your email to verify your account.',
+            email
         };
 
     } catch (err: any) {
-        console.error('Unexpected signup error:', err);
-        return { 
-            success: false, 
-            message: err.message || "Unexpected error during sign up" 
+        console.error('Registration error:', err);
+        return {
+            status: 'error',
+            message: err.message || 'Registration failed. Please try again.'
         };
     }
 };
@@ -153,6 +142,64 @@ const signIn = async (email: string, password: string) => {
     }
 };
 
+const verifyEmail = async (email: string) => {
+    try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError) throw userError;
+
+        if (user?.email === email && user?.email_confirmed_at) {
+            return { success: true, message: 'Email already verified' };
+        }
+
+        const redirectTo = `${import.meta.env.VITE_SITE_URL}/auth/verify-email/`;
+        const { error } = await supabase.auth.resend({
+            type: 'signup',
+            email,
+            options: {
+                emailRedirectTo: redirectTo
+            }
+        });
+
+        if (error) throw error;
+
+        return { success: true, message: 'Verification email resent successfully' };
+    } catch (error: any) {
+        console.error('Email verification error:', error);
+        return {
+            success: false,
+            message: error.message || 'Failed to verify email'
+        };
+    }
+};
+
+const resendVerificationEmail = async (email: string) => {
+    try {
+        const redirectTo = `${import.meta.env.VITE_SITE_URL}/auth/verify-email`;
+
+        const { error } = await supabase.auth.resend({
+            type: 'signup',
+            email,
+            options: {
+                emailRedirectTo: redirectTo
+            }
+        });
+
+        if (error) throw error;
+
+        return {
+            success: true,
+            message: 'Verification email resent successfully'
+        };
+    } catch (error: any) {
+        console.error('Resend verification error:', error);
+        return {
+            success: false,
+            message: error.message || 'Failed to resend verification email'
+        };
+    }
+};
+
 // Oauth signin
 const signInWithGoogle = async () => {
     try {
@@ -195,6 +242,7 @@ const getProfile = async (userId: string): Promise<UserProfile | null> => {
 // get session
 const getSession = async () => {
     try {
+        console.log('called')
         const {
             data: { session },
             error,
@@ -222,20 +270,26 @@ const getUser = async () => {
 // reset password email
 const sendResetPasswordEmail = async (email: string) => {
     try {
-        const options = {
-            redirectTo: `${window.location.origin}/auth/verify-email/`
-        };
-        const response = await supabase.auth.resetPasswordForEmail(email, options);
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${config.siteUrl}/auth/reset-password`
+        });
 
-        if (response.error) {
+        if (error) {
             return {
                 success: false,
-                message: response.error.message,
+                message: error.message,
             };
         }
-        return { success: true, data: response.data };
+
+        return { 
+            success: true,
+            message: "Password reset email sent - check your inbox"
+        };
     } catch (err: any) {
-        return { success: false, message: err.message || "Unexpected error during password reset email" };
+        return { 
+            success: false, 
+            message: err.message || "Failed to send reset email" 
+        };
     }
 };
 
@@ -281,6 +335,10 @@ export {
     getSession,
     onAuthStateChange,
     sendResetPasswordEmail,
+    verifyEmail,
+    resendVerificationEmail,
     resetPassword,
     signUp
 };
+
+

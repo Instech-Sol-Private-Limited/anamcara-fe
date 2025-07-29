@@ -12,7 +12,6 @@ const ResetPassword: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfPassword, setShowConfPassword] = useState(false);
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);

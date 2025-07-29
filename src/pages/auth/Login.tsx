@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import { signinUser } from '../../utils/users';
+import { signIn } from '../../utils/auth';
+import { useAuth } from '../../context/AuthProvider';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +11,8 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
+  const { setAuthData } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,19 +20,22 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_APP_URL_LOCAL}/users/login`, {
-        email,
-        password,
-      });
+      const response = await signIn(email, password)
 
-      const data = response.data;
-      console.log('Login response:', data);
+      if (response.success) {
+        if (response.data && response.data.session && response.data.session.access_token) {
+          localStorage.setItem('access_token', response.data.session.access_token);
+          navigate('/home')
+          setAuthData({
+            accessToken: response.data?.session.access_token || null,
+            userId: response.data.session.user?.id || null,
+            role: response.data.profile.role,
+          })
+          setSuccess(true);
+        }
 
-      if (data?.access_token) {
-        localStorage.setItem('access_token', data.access_token);
-        setSuccess(true);
       } else {
-        setError('Login failed: Token not received.');
+        setError(response.message);
       }
     } catch (err: any) {
       if (err.response && err.response.data && err.response.data.message) {
@@ -42,7 +49,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-gray-900 rounded-md shadow-lg">
+    <>
       <h2 className="text-xl font-semibold text-white text-center mb-4">Login</h2>
 
       {error && (
@@ -72,7 +79,7 @@ const Login: React.FC = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#A0FF06]"
+            className="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#A0FF06]"
           />
         </div>
 
@@ -84,7 +91,7 @@ const Login: React.FC = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#A0FF06]"
+            className="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#A0FF06]"
           />
           <button
             type="button"
@@ -98,9 +105,8 @@ const Login: React.FC = () => {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2 bg-gray-700 hover:bg-[#A0FF06] text-white font-medium rounded-md transition duration-200 ${
-            loading ? 'opacity-70 cursor-not-allowed' : ''
-          }`}
+          className={`w-full py-2 bg-gray-700 hover:bg-[#A0FF06] text-white font-medium rounded-md transition duration-200 ${loading ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
@@ -120,7 +126,7 @@ const Login: React.FC = () => {
           </Link>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

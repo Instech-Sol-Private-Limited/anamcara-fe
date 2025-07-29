@@ -9,11 +9,21 @@ const AuthLayout: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [loading, setLoading] = useState(true);
-    const { accessToken } = useAuth()
+    const { accessToken } = useAuth();
+
+    const passwordRoutes = [
+        '/auth/reset-password',
+        '/auth/forgot-password',
+    ];
 
     const checkAuthStatus = () => {
+        if (passwordRoutes.some(route => location.pathname.includes(route))) {
+            setLoading(false);
+            return;
+        }
+
         if (accessToken) {
-            navigate('/home')
+            navigate('/home');
         } else {
             setLoading(false);
         }
