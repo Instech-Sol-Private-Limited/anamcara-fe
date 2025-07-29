@@ -80,152 +80,152 @@ const Survey: React.FC<SurveyProps> = ({ onSkipToMain }) => {
     return (
         <div
             id="survey-area"
-            className="relative p-4 md:p-8 lg:p-16 overflow-hidden"
+            className="relative p-2 md:p-6 lg:p-10 overflow-auto no-scrollbar"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
         >
             {/* VIDEO OVERLAY */}
             {showVideo && (
-                <div className="fixed inset-0 z-50 bg-black flex justify-center items-center">
-                    <video
-                        autoPlay
-                        muted
-                        playsInline
-                        className="w-full h-full object-cover"
-                    >
-                        <source src={startup} type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
+            <div className="fixed inset-0 z-50 bg-black flex justify-center items-center">
+            <video
+            autoPlay
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            >
+            <source src={startup} type="video/mp4" />
+            Your browser does not support the video tag.
+            </video>
+            </div>
             )}
 
             {/* Stars Layer */}
             <div className="absolute inset-0 z-0 pointer-events-none">
-                {stars.map((star, index) => (
-                    <div
-                        key={index}
-                        id={`survey-star-${index}`}
-                        className="absolute w-1.5 h-1.5 rounded-full"
-                        style={{
-                            top: `${star.y}%`,
-                            left: `${star.x}%`,
-                            backgroundColor: "#00000000",
-                            transition: "background-color 0.3s ease",
-                        }}
-                    ></div>
-                ))}
+            {stars.map((star, index) => (
+            <div
+            key={index}
+            id={`survey-star-${index}`}
+            className="absolute w-1 h-1 rounded-full"
+            style={{
+                top: `${star.y}%`,
+                left: `${star.x}%`,
+                backgroundColor: "#00000000",
+                transition: "background-color 0.3s ease",
+            }}
+            ></div>
+            ))}
             </div>
 
             {/* Survey Content */}
-            <div className="survey-content relative z-10 space-y-12 max-w-screen-md w-full">
+            <div className="survey-content relative z-10 space-y-8 max-w-screen-sm w-full">
 
-                {/* TF Question */}
-                {tfQuestion && (
-                    <div className="true flex flex-col space-y-6">
-                        <h1 className="text-white font-mowaq text-3xl sm:text-2xl lg:text-2xl font-bold text-left">
-                            {tfQuestion.question}
-                        </h1>
-                        <div className="flex flex-wrap gap-4">
-                            {tfQuestion.answers.map((answer, idx) => {
-                                const isSelected = selectedTF === answer;
-                                return (
-                                    <button
-                                        key={idx}
-                                        onClick={() => setSelectedTF(answer)}
-                                        className={`w-32 font-mowaq text-center px-6 py-2 text-lg font-medium rounded-full transition-all 
-                    ${isSelected
-                                                ? "bg-[#ADFF00] text-black border-2 border-black"
-                                                : "bg-transparent text-[#ADFF00] border-2 border-[#BCFF9D] hover:bg-[#ADFF00] hover:text-black hover:border-black"
-                                            }`}
-                                    >
-                                        {answer}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
+            {/* TF Question */}
+            {tfQuestion && (
+            <div className="true flex flex-col space-y-4">
+            <h1 className="text-white font-mowaq text-sm md:text-base lg:text-lg font-bold text-left">
+                {tfQuestion.question}
+            </h1>
+            <div className="flex flex-wrap gap-3">
+                {tfQuestion.answers.map((answer, idx) => {
+                const isSelected = selectedTF === answer;
+                return (
+                <button
+                key={idx}
+                onClick={() => setSelectedTF(answer)}
+                className={`w-24 font-mowaq text-center px-4 py-1.5 lg:text-base md:text-sm text-xs font-medium rounded-full transition-all 
+            ${isSelected
+                    ? "bg-[#ADFF00] text-black border-2 border-black"
+                    : "bg-transparent text-[#ADFF00] border-2 border-[#BCFF9D] hover:bg-[#ADFF00] hover:text-black hover:border-black"
+                    }`}
+                >
+                {answer}
+                </button>
+                );
+                })}
+            </div>
+            </div>
+            )}
 
-                {/* MCQ Question */}
-                {mcqQuestion && (
-                    <div className="mcq flex flex-col space-y-6">
-                        <h1 className="mcq-q font-mowaq text-white text-2xl sm:text-3xl lg:text-2xl font-bold text-left">
-                            {mcqQuestion.question}
-                        </h1>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {mcqQuestion.answers.map((answer, idx) => {
-                                const optionLetter = String.fromCharCode(65 + idx);
-                                const isSelected = selectedMCQ === idx;
-                                const isHovered = hoveredOption === idx;
-                                const isActive = isSelected || isHovered;
+            {/* MCQ Question */}
+            {mcqQuestion && (
+            <div className="mcq flex flex-col space-y-4">
+            <h1 className="mcq-q font-mowaq text-white text-sm md:text-base lg:text-lg font-bold text-left">
+                {mcqQuestion.question}
+            </h1>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {mcqQuestion.answers.map((answer, idx) => {
+                const optionLetter = String.fromCharCode(65 + idx);
+                const isSelected = selectedMCQ === idx;
+                const isHovered = hoveredOption === idx;
+                const isActive = isSelected || isHovered;
 
-                                return (
-                                    <div
-                                        key={idx}
-                                        className="flex items-center space-x-4 cursor-pointer group"
-                                        onClick={() => setSelectedMCQ(idx)}
-                                        onMouseEnter={() => setHoveredOption(idx)}
-                                        onMouseLeave={() => setHoveredOption(null)}
-                                    >
-                                        <div
-                                            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 flex items-center justify-center transition-all
-                      ${isActive
-                                                    ? "bg-[#ADFF00] text-black border-black"
-                                                    : "bg-transparent text-[#ADFF00] border-[#BCFF9D]"
-                                                }`}
-                                        >
-                                            {optionLetter}
-                                        </div>
-                                        <p className="text-lg font-medium text-white">{answer}</p>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
-
-                {/* Static Question */}
-                <div className="static flex flex-col space-y-6">
-                    <h1 className="text-white font-mowaq text-2xl sm:text-3xl lg:text-2xl font-bold text-left">
-                        Who would you rather save?
-                    </h1>
-                    <div className="option flex flex-wrap gap-4">
-                        {["Self", "Partner", "Friend", "Parent"].map((answer, idx) => {
-                            const isSelected = selectedSave === answer;
-                            return (
-                                <button
-                                    key={idx}
-                                    onClick={() => setSelectedSave(answer)}
-                                    className={`w-32 text-center px-6 py-2 text-lg font-medium rounded-full transition-all
-                    ${isSelected
-                                            ? "bg-[#ADFF00] text-black border-2 border-black"
-                                            : "bg-transparent text-[#ADFF00] border border-[#BCFF9D] hover:bg-[#ADFF00] hover:text-black"
-                                        }`}
-                                >
-                                    {answer}
-                                </button>
-                            );
-                        })}
-                    </div>
+                return (
+                <div
+                key={idx}
+                className="flex items-center space-x-3 cursor-pointer group"
+                onClick={() => setSelectedMCQ(idx)}
+                onMouseEnter={() => setHoveredOption(idx)}
+                onMouseLeave={() => setHoveredOption(null)}
+                >
+                <div
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 flex items-center justify-center transition-all
+              ${isActive
+                    ? "bg-[#ADFF00] text-black border-black"
+                    : "bg-transparent text-[#ADFF00] border-[#BCFF9D]"
+                    }`}
+                >
+                    {optionLetter}
                 </div>
-
-                {/* Final Button */}
-                <div className="flex flex-wrap items-center gap-4">
-                    <button
-                        onClick={handleButtonClick}
-                        className="px-4 sm:px-6 py-2 font-mowaq text-sm sm:text-lg font-bold text-black bg-[#ADFF00] rounded-lg hover:bg-black hover:text-white border-2 border-[#BCFF9D] transition-all"
-                        style={{ boxShadow: "0px 0px 15px #3FA604" }}
-                    >
-                        I HAVE OBLIGED
-                    </button>
-                    <Link
-                        onClick={onSkipToMain}
-                        className="text-white text-sm font-mowaq sm:text-lg font-medium cursor-pointer"
-                        to={"/home"}
-                    >
-                        SKIP TO MAIN PAGE →
-                    </Link>
+                <p className="lg:text-base md:text-sm text-xs font-medium text-white">{answer}</p>
                 </div>
+                );
+                })}
+            </div>
+            </div>
+            )}
+
+            {/* Static Question */}
+            <div className="static flex flex-col space-y-4">
+            <h1 className="text-white font-mowaq text-sm md:text-base lg:text-lg font-bold text-left">
+            Who would you rather save?
+            </h1>
+            <div className="option flex flex-wrap gap-3">
+            {["Self", "Partner", "Friend", "Parent"].map((answer, idx) => {
+                const isSelected = selectedSave === answer;
+                return (
+                <button
+                key={idx}
+                onClick={() => setSelectedSave(answer)}
+                className={`w-24 font-mowaq text-center px-4 py-1.5 lg:text-base md:text-sm text-xs font-medium rounded-full transition-all 
+            ${isSelected
+                    ? "bg-[#ADFF00] text-black border-2 border-black"
+                    : "bg-transparent text-[#ADFF00] border border-[#BCFF9D] hover:bg-[#ADFF00] hover:text-black"
+                }`}
+                >
+                {answer}
+                </button>
+                );
+            })}
+            </div>
+            </div>
+
+            {/* Final Button */}
+            <div className="flex flex-wrap items-center gap-3">
+            <button
+            onClick={handleButtonClick}
+            className="px-3 sm:px-4 py-1.5 font-mowaq text-xs sm:text-base font-bold text-black bg-[#ADFF00] rounded-lg hover:bg-black hover:text-white border-2 border-[#BCFF9D] transition-all"
+            style={{ boxShadow: "0px 0px 10px #3FA604" }}
+            >
+            I HAVE OBLIGED
+            </button>
+            <Link
+            onClick={onSkipToMain}
+            className="text-white text-xs font-mowaq sm:text-base font-medium cursor-pointer"
+            to={"/home"}
+            >
+            SKIP TO MAIN PAGE →
+            </Link>
+            </div>
 
             </div>
         </div>
